@@ -1,0 +1,57 @@
+import { api } from "./client";
+import type { User } from "../types/user";
+
+
+class AuthAPI {
+  async me() {
+    return await api.get<User>("/auth/me");
+  }
+
+  async login(email: string, password: string) {
+    return await api.post<User>("/auth/login", { email, password });
+  }
+
+  async signup(username: string, email: string, password: string) {
+    return await api.post("/auth/signup", { username, email, password });
+  }
+
+  async refresh() {
+    return await api.post<User>("/auth/refresh");
+  }
+
+  async logout() {
+    return await api.post("/auth/logout");
+  }
+
+  async logoutAll() {
+    return await api.post("/auth/logout/all");
+  }  
+
+
+}
+
+
+class UserAPI {
+  async updateProfile(data: { username?: string; email?: string }) {
+    return await api.put<User>("/user/", data);
+  }
+
+  async updateProfileImage(file: File) {
+    return await api.upload<{url: string}>("/user/image/perfil", file);
+  }
+
+  async deleteProfileImage() {
+    return await api.delete("/user/image/perfil");
+  }
+}
+
+
+class LinesApi {
+
+  readonly auth = new AuthAPI();
+  readonly user = new UserAPI();
+
+}
+
+
+export const linesApi = new LinesApi();

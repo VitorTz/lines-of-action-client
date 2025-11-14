@@ -1,0 +1,125 @@
+@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700&display=swap');
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #DC0E0E;
+  --secondary: #E62727;
+  --accent: #F4A261;
+  --dark: #2B2118;
+  --light: #FFF4ED;
+  --text: #3A2E26;
+  --text-light: #8C7A6B;
+  --bg: #FFFAF7;
+  --card-bg: #FFFFFF;
+  --border: #F0E5DD;
+  --shadow-sm: 0 2px 8px rgba(232, 116, 79, 0.08);
+  --shadow-md: 0 4px 16px rgba(232, 116, 79, 0.12);
+  --shadow-lg: 0 8px 32px rgba(232, 116, 79, 0.16);
+  --border-radius: 4px;
+}
+
+body {
+  font-family: 'League Spartan', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);  
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-reader {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #111111;
+}
+
+
+.main-content {
+  flex: 1;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+}
+
+.main-content-reader {
+  flex: 1;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0rem 0rem;
+}
+
+
+@media (min-width: 768px) {
+  
+  .menu-toggle.mobile {
+    display: none;
+  }
+
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1.5rem 1rem;
+  }
+  
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--light);
+  border-radius: var(--border-radius);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: var(--border-radius);
+  border: 2px solid var(--light);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary);
+}
+
+
+@media (prefers-reduced-motion: no-preference) {
+  * {
+    scroll-behavior: smooth;
+  }
+}
+
+::selection {
+  background: var(--primary);
+  color: white;
+}
+
+::-moz-selection {
+  background: var(--primary);
+  color: white;
+}
