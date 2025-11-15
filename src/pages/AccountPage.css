@@ -1,7 +1,6 @@
 
 .container {
-    min-height: 100vh;
-    background: var(--bg);
+  background: var(--bg);
 }
 
 
@@ -57,10 +56,7 @@
   border: 2px solid var(--border);
 }
 
-.btn-secondary:hover:not(:disabled) {
-  background: var(--card-bg);
-  border-color: var(--primary);
-}
+
 
 .btn-danger {
   background: #dc2626;

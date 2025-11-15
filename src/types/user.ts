@@ -10,6 +10,14 @@ export interface User {
 
 }
 
+
+export interface UserCreate {
+
+    username: string
+    email: string
+    
+}
+
 export interface AuthContextType {
     
   user: User | null;

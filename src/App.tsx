@@ -56,6 +56,7 @@ const App = () => {
       <Router />
     </AuthContext.Provider>
   );
+  
 };
 
 

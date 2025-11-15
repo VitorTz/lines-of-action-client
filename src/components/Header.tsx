@@ -1,4 +1,4 @@
-import { User, Menu, X, History } from "lucide-react";
+import { User, Menu, X, History, Info } from "lucide-react";
 import type { PageType } from "../types/general";
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
@@ -35,7 +35,7 @@ const Header = ({ navigate }: HeaderProps) => {
     <header className="header">
       <div className="header-container">
         {/* Logo */}
-        <div className="header-logo" onClick={() => navigate("home")}>
+        <div className="header-logo" onClick={() => navigate("lobby")}>
           <span>Lines of Action</span>
         </div>
 
@@ -77,7 +77,23 @@ const Header = ({ navigate }: HeaderProps) => {
                   setHamburgerOpen(false);
                 }}
               >
-                <History size={18} /> Match History
+                <History size={18} /> Histórico de Partidas
+              </button>
+              <button
+                onClick={() => {
+                  navigate("project-description");
+                  setHamburgerOpen(false);
+                }}
+              >
+                <Info size={18} /> Sobre o Projeto
+              </button>
+              <button
+                onClick={() => {
+                  navigate("about");
+                  setHamburgerOpen(false);
+                }}
+              >
+                <Info size={18} /> Sobre o Jogo
               </button>
             </div>
           </div>

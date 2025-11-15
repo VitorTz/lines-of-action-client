@@ -1,3 +1,3 @@
 
 
-export type PageType = 'home' | 'login' | 'signup' | 'account' | 'match-history'
+export type PageType = 'project-description' | 'about' | 'lobby' | 'game-bot' | 'game-player' | 'login' | 'signup' | 'account' | 'match-history'

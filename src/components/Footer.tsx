@@ -5,7 +5,7 @@ import './Footer.css';
 const Footer = () => (
   <footer className="footer">
     <div className="footer-content">
-      <p className="brand">&copy; 2025 Lines of Action</p>
+      <p className="brand">Lines of Action Web — Jogo online com chat, rankings e gravação de partidas.</p>
       <nav className="links">
         <a
           href="https://github.com/vitortz/draynor-api"

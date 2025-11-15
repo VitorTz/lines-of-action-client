@@ -5,15 +5,14 @@ import axios, {
 } from 'axios';
 
 
+const MONGODB_BASE_URL = "http://localhost:3001/api/v1"
 
-const BASE_URL = "https://draynor-api.fly.dev/api/v1"
-// const BASE_URL = "http://localhost:8000/api/v1"
 
 class ApiClient {
 
   private client: AxiosInstance;
 
-  constructor(baseURL: string = BASE_URL) {
+  constructor(baseURL: string = MONGODB_BASE_URL) {
     this.client = axios.create({
       baseURL,
       headers: {

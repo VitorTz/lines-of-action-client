@@ -1,0 +1,170 @@
+
+
+/* 3. Layout (Substituições do Tailwind) */
+.app-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  box-sizing: border-box; /* Garante que o padding não estoure */
+}
+
+.lobby-card {
+  width: 100%;
+  max-width: 28rem; /* max-w-md */
+  background-color: var(--card-bg);
+  border-radius: 0.75rem; /* rounded-xl */
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+/* Header */
+.lobby-header {
+  padding: 1.25rem; /* p-5 */
+  border-bottom: 1px solid var(--border);
+}
+.lobby-header h1 {
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: 700; /* font-bold */
+  text-align: center;
+  color: var(--text);
+  margin: 0;
+}
+.lobby-header p {
+  text-align: center;
+  font-size: 0.875rem; /* text-sm */
+  color: var(--text-light);
+  margin: 0.25rem 0 0 0;
+}
+
+/* Navegação das Abas */
+.lobby-nav {
+  display: flex;
+  padding: 0.375rem; /* p-1.5 */
+  background-color: var(--light);
+}
+.tab-button {
+  flex-grow: 1; /* flex-1 */
+  padding: 0.5rem; /* p-2 */
+  border-radius: var(--border-radius);
+  font-weight: 600; /* font-semibold */
+  text-align: center;
+  color: var(--text-light);
+  transition: all 0.2s ease-in-out;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+.tab-button:hover {
+  color: var(--text);
+}
+.tab-active {
+  background-color: var(--card-bg) !important;
+  color: var(--primary) !important;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Conteúdo Principal (Listas) */
+.lobby-content {
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.player-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+/* Simula 'divide-y' */
+.player-list > li + li {
+  border-top: 1px solid var(--border);
+}
+
+.player-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem; /* p-3.5 */
+  transition: background-color 0.2s ease;
+}
+.player-item:hover {
+  background-color: var(--light);
+}
+
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* gap-3 */
+}
+
+.player-icon {
+  width: 2.5rem; /* w-10 */
+  height: 2.5rem; /* h-10 */
+  border-radius: 50%;
+  background-color: var(--light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  flex-shrink: 0; /* shrink-0 */
+}
+
+.player-info .username {
+  font-weight: 600;
+  color: var(--text);
+}
+.player-info .status {
+  font-size: 0.875rem;
+  color: var(--text-light);
+}
+
+/* Botões */
+.btn {
+  border: none;
+  padding: 0.375rem 1rem; /* py-1.5 px-4 */
+  border-radius: var(--border-radius);
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 600; /* font-semibold */
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+  flex-shrink: 0; /* shrink-0 */
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+}
+.btn-primary:hover {
+  background-color: var(--secondary);
+}
+
+/* Botão Desabilitado (ex: Ocupado) */
+.btn:disabled {
+  background-color: #d1d5db; /* bg-gray-300 */
+  color: #6b7280; /* text-gray-500 */
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Rodapé */
+.lobby-footer {
+  padding: 1rem; /* p-4 */
+  border-top: 1px solid var(--border);
+}
+
+.btn-accent {
+  width: 100%;
+  background-color: var(--accent);
+  align-items: center;
+  justify-content: center;
+  color: var(--dark);
+  font-weight: 700;
+  padding: 0.75rem;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-accent:hover {
+  opacity: 0.9;
+}

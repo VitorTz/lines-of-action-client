@@ -33,15 +33,15 @@ class AuthAPI {
 
 class UserAPI {
   async updateProfile(data: { username?: string; email?: string }) {
-    return await api.put<User>("/user/", data);
+    return await api.put<User>("/auth/user/", data);
   }
 
   async updateProfileImage(file: File) {
-    return await api.upload<{url: string}>("/user/image/perfil", file);
+    return await api.upload<{url: string}>("/auth/user/image/perfil", file);
   }
 
   async deleteProfileImage() {
-    return await api.delete("/user/image/perfil");
+    return await api.delete("/auth/user/image/perfil");
   }
 }
 

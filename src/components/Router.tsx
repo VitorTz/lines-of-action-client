@@ -5,36 +5,35 @@ import SignupPage from "../pages/SignUpPage";
 import Header from "./Header";
 import Footer from "./Footer";
 import AccountPage from "../pages/AccountPage";
-import HomePage from "../pages/HomePage";
+import LobbyPage from "../pages/LobbyPage";
+import AboutPage from "../pages/AboutPage";
+import { useAuth } from "../context/AuthContext";
+import ProjectDescriptionPage from "../pages/ProjectDescriptionPage";
+import MatchHistoryPage from "../pages/MatchHistoryPage";
+import GameVsBot from "../pages/GameVsBot";
+
 
 const Router = () => {
 
-  const [currentPage, setCurrentPage] = useState<PageType>("home");
+  const { user } = useAuth()
+  const [currentPage, setCurrentPage] = useState<PageType>("lobby");
   const [pageData, setPageData] = useState<any>(null);
 
   const pageFromHash = (hash: string): {page: PageType, data?: any} => {
     if (!hash) return { page: "home" as PageType, data: null };
     const clean: string | PageType = hash.replace(/^#/, "");
 
-    if (clean.startsWith("manga-")) {
-      const id = parseInt(clean.split("-")[1], 10);
-      return { page: "manga" as PageType, data: { id } };
+    if (clean.startsWith("game-bot")) {
+      const difficulty =  clean.split("-")[1]
+      return { page: 'game-bot', data: difficulty }
     }
-    if (clean.startsWith("reader-")) {
-      const nums = clean
-        .split("-")
-        .slice(1)
-        .map((i) => parseInt(i));
-      return {
-        page: "reader" as PageType,
-        data: { mangaId: nums[0], chapterId: nums[1], chapterIndex: nums[2] },
-      };
-    }
+
     if (clean === "account") return { page: "account", data: null };
     if (clean === "login") return { page: "login", data: null };
     if (clean === "signup") return { page: "signup", data: null };
     if (clean === "match-history") return { page: "match-history", data: null };
-    return { page: "home", data: null };
+    if (clean === "about") return { page: "about", data: null}
+    return { page: "lobby", data: null };
   };
 
   useEffect(() => {
@@ -87,12 +86,9 @@ const Router = () => {
     
     let hash = `#${page}`;
 
-    // if (page === "manga" && data?.id) {
-    //     hash = `#manga-${data.id}`;
-    // }
-    // if (page === "reader") {
-    //     hash = `#reader-${data.mangaId}-${data.chapterId}-${data.chapterIndex}`;
-    // }
+    if (page === 'game-bot') {
+      hash = `#game-bot-${data}`;
+    }    
     
     window.history.pushState(
       { page, data },
@@ -102,17 +98,26 @@ const Router = () => {
   };
 
   const renderPage = () => {
+    if (!user) { return <LoginPage navigate={navigate} /> }
     switch (currentPage) {
       case "account":
         return <AccountPage navigate={navigate} />;
-      case "home":
-        return <HomePage navigate={navigate} />;
+      case "lobby":
+        return <LobbyPage navigate={navigate} />;
       case "login":
         return <LoginPage navigate={navigate} />;
       case "signup":
         return <SignupPage navigate={navigate} />;
+      case "project-description":
+        return <ProjectDescriptionPage navigate={navigate} />
+      case "about":
+        return <AboutPage navigate={navigate} />
+      case 'match-history':
+        return <MatchHistoryPage navigate={navigate} />
+      case 'game-bot':
+        return <GameVsBot navigate={navigate} difficulty={pageData} />
       default:
-        return <HomePage navigate={navigate} />;
+        return <LobbyPage navigate={navigate} />;
     }
   };
 
