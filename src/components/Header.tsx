@@ -1,7 +1,7 @@
 import { User, Menu, X, History, Info } from "lucide-react";
 import type { PageType } from "../types/general";
 import { useState, useEffect, useRef } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "./auth/AuthContext";
 import "./Header.css";
 
 interface HeaderProps {

@@ -35,8 +35,8 @@ const MatchHistoryPage = ({ navigate }: MatchHistoryPageProps) => {
                 <Trophy />
               </div>
               <div className="match-info">
-                <div className="opponent">vs. Mestre_LOA</div>
-                <div className="details">Vitória • 42 jogadas • 12/11/2025</div>
+                <div className="opponent">vs. A</div>
+                <div className="details">Vitória - 12/11/2025</div>
               </div>
               <button className="btn btn-secondary">
                 Rever
@@ -47,8 +47,8 @@ const MatchHistoryPage = ({ navigate }: MatchHistoryPageProps) => {
                 <DefeatIcon />
               </div>
               <div className="match-info">
-                <div className="opponent">vs. Ana_Gamer</div>
-                <div className="details">Derrota • 30 jogadas • 11/11/2025</div>
+                <div className="opponent">vs. B</div>
+                <div className="details">Derrota - 11/11/2025</div>
               </div>
               <button className="btn btn-secondary">
                 Rever
@@ -60,7 +60,7 @@ const MatchHistoryPage = ({ navigate }: MatchHistoryPageProps) => {
               </div>
               <div className="match-info">
                 <div className="opponent">vs. Bot (Difícil)</div>
-                <div className="details">Vitória • 55 jogadas • 10/11/2025</div>
+                <div className="details">Vitória - 10/11/2025</div>
               </div>
               <button className="btn btn-secondary">
                 Rever
@@ -72,8 +72,8 @@ const MatchHistoryPage = ({ navigate }: MatchHistoryPageProps) => {
                 <DefeatIcon />
               </div>
               <div className="match-info">
-                <div className="opponent">vs. Jogador_Ativo_123</div>
-                <div className="details">Derrota • 28 jogadas • 09/11/2025</div>
+                <div className="opponent">vs. C</div>
+                <div className="details">Derrota - 09/11/2025</div>
               </div>
               <button className="btn btn-secondary">
                 Rever

@@ -6,6 +6,14 @@ export function formatTime(seconds: number): string {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
+export const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+    });
+};
 
 export function generateNewGameBoard(): Board {
     return [

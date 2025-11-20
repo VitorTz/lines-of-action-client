@@ -1,5 +1,5 @@
 import { api } from "./client";
-import type { User } from "../types/user";
+import type { Address, SignupForm, User } from "../types/user";
 
 
 class AuthAPI {
@@ -11,8 +11,8 @@ class AuthAPI {
     return await api.post<User>("/auth/login", { email, password });
   }
 
-  async signup(username: string, email: string, password: string) {
-    return await api.post("/auth/signup", { username, email, password });
+  async signup(signupForm: SignupForm) {
+    return await api.post("/auth/signup", signupForm);
   }
 
   async refresh() {
@@ -32,7 +32,7 @@ class AuthAPI {
 
 
 class UserAPI {
-  async updateProfile(data: { username?: string; email?: string }) {
+  async updateProfile(data: { username: string; age: number, address: Address }) {
     return await api.put<User>("/auth/user/", data);
   }
 

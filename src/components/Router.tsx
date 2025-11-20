@@ -7,7 +7,7 @@ import Footer from "./Footer";
 import AccountPage from "../pages/AccountPage";
 import LobbyPage from "../pages/LobbyPage";
 import AboutPage from "../pages/AboutPage";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "./auth/AuthContext";
 import ProjectDescriptionPage from "../pages/ProjectDescriptionPage";
 import MatchHistoryPage from "../pages/MatchHistoryPage";
 import GameVsBot from "../pages/GameVsBot";

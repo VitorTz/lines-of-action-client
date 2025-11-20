@@ -1,7 +1,9 @@
 import type { PageType } from "../types/general";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../components/auth/AuthContext";
 import { useState } from "react";
 import './AuthPage.css'
+import { useNotification } from "../components/notification/NotificationContext";
+
 
 
 interface LoginPageProps {
@@ -9,10 +11,31 @@ interface LoginPageProps {
 }
 
 const LoginPage: React.FC<LoginPageProps> = ({ navigate }) => {
+
+  const { addNotification } = useNotification()
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { login } = useAuth();
+
+  const handleSuccess = () => {
+    addNotification({
+      type: 'success',
+      title: 'Login realizado!',
+      message: 'Bem-vindo de volta',
+      duration: 3000
+    });
+  };
+
+  const handleError = () => {
+    addNotification({
+      type: 'error',
+      title: 'Erro',
+      message: 'Email ou senha inválidos',
+      duration: 3000
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,9 +43,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigate }) => {
     
     const success = await login(email, password);
     if (success) {
+      handleSuccess()
       navigate('lobby');
     } else {
-      setError('Invalid email or password.');
+      handleError()
     }
   };
 
