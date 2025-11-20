@@ -3,36 +3,40 @@ import { User as UserIcon, Bot } from "lucide-react";
 import type { PageType } from "../types/general";
 import "./LobbyPage.css";
 
+
 type ActiveTab = "players" | "bots";
+
 
 interface PlayersTabProps {
   navigate: (page: PageType, data?: any) => void;
 }
 
+
+// Apenas para mostrar como ficaria
+// Os dados virão do websocket
 const PlayersTab = ({ navigate }: PlayersTabProps) => (
+
   <ul className="player-list">
-    {/* Jogador 1 (Mock) */}
     <li className="player-item">
       <div className="player-info">
         <div className="player-icon">
           <UserIcon />
         </div>
         <div>
-          <div className="username">Jogador_Ativo_123</div>
+          <div className="username">Player 1</div>
           <div className="status">Disponível</div>
         </div>
       </div>
       <button className="btn btn-primary">Desafiar</button>
     </li>
-
-    {/* Jogador 2 (Mock) */}
+    
     <li className="player-item">
       <div className="player-info">
         <div className="player-icon">
           <UserIcon />
         </div>
         <div>
-          <div className="username">Ana_Gamer</div>
+          <div className="username">Player 2</div>
           <div className="status">Em partida</div>
         </div>
       </div>
@@ -40,15 +44,14 @@ const PlayersTab = ({ navigate }: PlayersTabProps) => (
         Ocupado
       </button>
     </li>
-
-    {/* Jogador 3 (Mock) */}
+    
     <li className="player-item">
       <div className="player-info">
         <div className="player-icon">
           <UserIcon />
         </div>
         <div>
-          <div className="username">Mestre_LOA</div>
+          <div className="username">Player 3</div>
           <div className="status">Disponível</div>
         </div>
       </div>

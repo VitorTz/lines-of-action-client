@@ -5,6 +5,5 @@ export abstract class BotPlayer {
 
   abstract selectMove(board: Board, allMoves: Move[]): Move;
   abstract getName(): string;
-  abstract getDescription(): string;
 
 }

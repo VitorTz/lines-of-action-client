@@ -37,6 +37,10 @@ const Router = () => {
   };
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [currentPage]);
+
+  useEffect(() => {
     const initial = pageFromHash(window.location.hash);
     setCurrentPage(initial.page);
     setPageData(initial.data);
@@ -97,8 +101,11 @@ const Router = () => {
     );
   };
 
+  
   const renderPage = () => {
-    if (!user) { return <LoginPage navigate={navigate} /> }
+    if (!user && !["signup", "login"].includes(currentPage)) {
+      return <LoginPage navigate={navigate} /> 
+    }
     switch (currentPage) {
       case "account":
         return <AccountPage navigate={navigate} />;
@@ -120,10 +127,6 @@ const Router = () => {
         return <LobbyPage navigate={navigate} />;
     }
   };
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" });
-  }, [currentPage]);
 
   return (
     <div className="app">

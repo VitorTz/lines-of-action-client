@@ -1,15 +1,22 @@
 import { BotPlayer } from "./BotPlayer";
-import type { Board, Move, Position, Player } from "../types/game";
+import { type Board, type Move, type Position, type Piece, WHITE_PIECE, BLACK_PIECE, EMPTY_CELL } from "../types/game";
 
 
 export class HardBot extends BotPlayer {
     private readonly MAX_DEPTH = 2;
 
     selectMove(board: Board, allMoves: Move[]): Move {
-        let bestMove = allMoves[0];
+        // Ordenar movimentos: capturas primeiro
+        const sortedMoves = allMoves.sort((a, b) => {
+            if (a.captured && !b.captured) return -1;
+            if (!a.captured && b.captured) return 1;
+            return 0;
+        });
+
+        let bestMove = sortedMoves[0];
         let bestScore = -Infinity;
 
-        for (const move of allMoves) {
+        for (const move of sortedMoves) {
             const newBoard = this.applyMove(board, move);
             const score = this.minimax(newBoard, this.MAX_DEPTH - 1, false, -Infinity, Infinity);
 
@@ -22,13 +29,62 @@ export class HardBot extends BotPlayer {
         return bestMove;
     }
 
+
+    private isConnected(board: Board, player: Piece): boolean {
+        const pieces: Position[] = [];
+        for (let row = 0; row < 8; row++) {
+            for (let col = 0; col < 8; col++) {
+                if (board[row][col] === player) {
+                    pieces.push({ row, col });
+                }
+            }
+        }
+
+        if (pieces.length <= 1) return true;
+
+        const visited = new Set<string>();
+        const stack = [pieces[0]];
+        visited.add(`${pieces[0].row},${pieces[0].col}`);
+
+        while (stack.length > 0) {
+            const current = stack.pop()!;
+
+            for (let dr = -1; dr <= 1; dr++) {
+                for (let dc = -1; dc <= 1; dc++) {
+                    if (dr === 0 && dc === 0) continue;
+
+                    const newRow = current.row + dr;
+                    const newCol = current.col + dc;
+                    const key = `${newRow},${newCol}`;
+
+                    if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8 &&
+                        board[newRow][newCol] === player && !visited.has(key)) {
+                        visited.add(key);
+                        stack.push({ row: newRow, col: newCol });
+                    }
+                }
+            }
+        }
+
+        return visited.size === pieces.length;
+    }
+
     private minimax(board: Board, depth: number, isMaximizing: boolean, alpha: number, beta: number): number {
+        const whiteWon = this.isConnected(board, WHITE_PIECE);
+        const blackWon = this.isConnected(board, BLACK_PIECE);
+
+        if (whiteWon) return 100000 - (this.MAX_DEPTH - depth); // Vitórias mais rápidas valem mais
+        if (blackWon) return -100000 + (this.MAX_DEPTH - depth);
+
+        if (depth === 0) {
+            return this.evaluatePosition(board);
+        }
         if (depth === 0) {
             return this.evaluatePosition(board);
         }
 
-        const player = isMaximizing ? 'white' : 'black';
-        const moves = this.getAllValidMoves(board, player);
+        const piece = isMaximizing ? WHITE_PIECE : BLACK_PIECE;
+        const moves = this.getAllValidMoves(board, piece);
 
         if (moves.length === 0) {
             return isMaximizing ? -10000 : 10000;
@@ -57,29 +113,86 @@ export class HardBot extends BotPlayer {
         }
     }
 
+    private getLargestConnectedGroup(board: Board, player: Piece): number {
+        const pieces: Position[] = [];
+        for (let row = 0; row < 8; row++) {
+            for (let col = 0; col < 8; col++) {
+                if (board[row][col] === player) {
+                    pieces.push({ row, col });
+                }
+            }
+        }
+
+        if (pieces.length === 0) return 0;
+
+        const visited = new Set<string>();
+        let maxGroupSize = 0;
+
+        for (const piece of pieces) {
+            const key = `${piece.row},${piece.col}`;
+            if (visited.has(key)) continue;
+
+            // BFS para encontrar grupo conectado
+            const queue = [piece];
+            const currentGroup = new Set<string>();
+            currentGroup.add(key);
+            visited.add(key);
+
+            while (queue.length > 0) {
+                const current = queue.shift()!;
+
+                for (let dr = -1; dr <= 1; dr++) {
+                    for (let dc = -1; dc <= 1; dc++) {
+                        if (dr === 0 && dc === 0) continue;
+
+                        const newRow = current.row + dr;
+                        const newCol = current.col + dc;
+                        const newKey = `${newRow},${newCol}`;
+
+                        if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8 &&
+                            board[newRow][newCol] === player && !visited.has(newKey)) {
+                            visited.add(newKey);
+                            currentGroup.add(newKey);
+                            queue.push({ row: newRow, col: newCol });
+                        }
+                    }
+                }
+            }
+
+            maxGroupSize = Math.max(maxGroupSize, currentGroup.size);
+        }
+
+        return maxGroupSize;
+    }
+
     private evaluatePosition(board: Board): number {
         let score = 0;
 
-        // Avaliar conectividade (mais importante)
-        const whiteConnectivity = this.evaluateConnectivity(board, 'white');
-        const blackConnectivity = this.evaluateConnectivity(board, 'black');
-        score += (whiteConnectivity - blackConnectivity) * 20;
+        // 1. Conectividade (PESO MAIOR - é o objetivo do jogo!)
+        const whiteConnectivity = this.evaluateConnectivity(board, WHITE_PIECE);
+        const blackConnectivity = this.evaluateConnectivity(board, BLACK_PIECE);
+        score += (whiteConnectivity - blackConnectivity) * 30; // Aumentado de 20
 
-        // Avaliar número de peças
-        const whitePieces = board.flat().filter(p => p === 'white').length;
-        const blackPieces = board.flat().filter(p => p === 'black').length;
-        score += (whitePieces - blackPieces) * 10;
+        // 2. Número de peças
+        const whitePieces = board.flat().filter(p => p === WHITE_PIECE).length;
+        const blackPieces = board.flat().filter(p => p === BLACK_PIECE).length;
+        score += (whitePieces - blackPieces) * 15; // Aumentado de 10
 
-        // Avaliar compactação (distância média entre peças)
-        const whiteCompactness = this.evaluateCompactness(board, 'white');
-        const blackCompactness = this.evaluateCompactness(board, 'black');
-        score -= whiteCompactness * 2;
-        score += blackCompactness * 2;
+        // 3. Compactação (menor distância = melhor)
+        const whiteCompactness = this.evaluateCompactness(board, WHITE_PIECE);
+        const blackCompactness = this.evaluateCompactness(board, BLACK_PIECE);
+        score -= whiteCompactness * 3; // Aumentado de 2
+        score += blackCompactness * 3;
+
+        // 4. NOVO: Avaliar maior grupo conectado
+        const whiteLargestGroup = this.getLargestConnectedGroup(board, WHITE_PIECE);
+        const blackLargestGroup = this.getLargestConnectedGroup(board, BLACK_PIECE);
+        score += (whiteLargestGroup - blackLargestGroup) * 25;
 
         return score;
     }
 
-    private evaluateConnectivity(board: Board, player: Player): number {
+    private evaluateConnectivity(board: Board, player: Piece): number {
         const pieces: Position[] = [];
         for (let row = 0; row < 8; row++) {
             for (let col = 0; col < 8; col++) {
@@ -108,7 +221,7 @@ export class HardBot extends BotPlayer {
         return totalConnections;
     }
 
-    private evaluateCompactness(board: Board, player: Player): number {
+    private evaluateCompactness(board: Board, player: Piece): number {
         const pieces: Position[] = [];
         for (let row = 0; row < 8; row++) {
             for (let col = 0; col < 8; col++) {
@@ -136,11 +249,11 @@ export class HardBot extends BotPlayer {
         const newBoard = board.map(row => [...row]);
         const piece = newBoard[move.from.row][move.from.col];
         newBoard[move.to.row][move.to.col] = piece;
-        newBoard[move.from.row][move.from.col] = null;
+        newBoard[move.from.row][move.from.col] = EMPTY_CELL;
         return newBoard;
     }
 
-    private getAllValidMoves(board: Board, player: Player): Move[] {
+    private getAllValidMoves(board: Board, player: Piece): Move[] {
         const allMoves: Move[] = [];
 
         for (let row = 0; row < 8; row++) {
@@ -151,7 +264,7 @@ export class HardBot extends BotPlayer {
                         allMoves.push({
                             from: { row, col },
                             to,
-                            captured: board[to.row][to.col] !== null
+                            captured: board[to.row][to.col] !== EMPTY_CELL
                         });
                     });
                 }
@@ -161,7 +274,7 @@ export class HardBot extends BotPlayer {
         return allMoves;
     }
 
-    private getValidMoves(board: Board, from: Position, player: Player): Position[] {
+    private getValidMoves(board: Board, from: Position, player: Piece): Position[] {
         const moves: Position[] = [];
         const directions: [number, number][] = [
             [-1, 0], [1, 0], [0, -1], [0, 1],
@@ -179,7 +292,7 @@ export class HardBot extends BotPlayer {
             for (let i = 1; i < distance; i++) {
                 const r = from.row + dr * i;
                 const c = from.col + dc * i;
-                if (board[r][c] !== null && board[r][c] !== player) {
+                if (board[r][c] !== EMPTY_CELL && board[r][c] !== player) {
                     pathClear = false;
                     break;
                 }
@@ -187,7 +300,7 @@ export class HardBot extends BotPlayer {
 
             if (pathClear) {
                 const targetPiece = board[targetRow][targetCol];
-                if (targetPiece === null || targetPiece !== player) {
+                if (targetPiece === EMPTY_CELL || targetPiece !== player) {
                     moves.push({ row: targetRow, col: targetCol });
                 }
             }
@@ -204,14 +317,14 @@ export class HardBot extends BotPlayer {
             const r = from.row + dr * i;
             const c = from.col + dc * i;
             if (r < 0 || r >= 8 || c < 0 || c >= 8) break;
-            if (board[r][c] !== null) count++;
+            if (board[r][c] !== EMPTY_CELL) count++;
         }
 
         for (let i = 1; i < 8; i++) {
             const r = from.row - dr * i;
             const c = from.col - dc * i;
             if (r < 0 || r >= 8 || c < 0 || c >= 8) break;
-            if (board[r][c] !== null) count++;
+            if (board[r][c] !== EMPTY_CELL) count++;
         }
 
         count++;
@@ -223,7 +336,4 @@ export class HardBot extends BotPlayer {
         return 'Difícil';
     }
 
-    getDescription(): string {
-        return 'Usa estratégia avançada (Minimax)';
-    }
 }

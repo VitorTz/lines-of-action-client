@@ -1,9 +1,10 @@
 import { BotPlayer } from "./BotPlayer";
-import type { Board, Move, Position, Player } from "../types/game";
+import { type Board, type Move, type Position, type Piece, EMPTY_CELL, WHITE_PIECE } from "../types/game";
 
 
 export class MediumBot extends BotPlayer {
   selectMove(board: Board, allMoves: Move[]): Move {
+    
     // Priorizar capturas
     const captureMoves = allMoves.filter(m => m.captured);
     if (captureMoves.length > 0 && Math.random() > 0.3) {
@@ -32,17 +33,17 @@ export class MediumBot extends BotPlayer {
     const newBoard = board.map(row => [...row]);
     const piece = newBoard[move.from.row][move.from.col];
     newBoard[move.to.row][move.to.col] = piece;
-    newBoard[move.from.row][move.from.col] = null;
+    newBoard[move.from.row][move.from.col] = EMPTY_CELL;
 
     // Pontos por captura
     if (move.captured) score += 15;
 
     // Avaliar conectividade após a jogada
-    const connections = this.countConnections(newBoard, move.to, 'white');
+    const connections = this.countConnections(newBoard, move.to, WHITE_PIECE);
     score += connections * 5;
 
     // Penalizar peças isoladas
-    const isolated = this.isIsolated(newBoard, move.to, 'white');
+    const isolated = this.isIsolated(newBoard, move.to, WHITE_PIECE);
     if (isolated) score -= 10;
 
     // Bonus por centralização
@@ -52,7 +53,7 @@ export class MediumBot extends BotPlayer {
     return score;
   }
 
-  private countConnections(board: Board, pos: Position, player: Player): number {
+  private countConnections(board: Board, pos: Position, player: Piece): number {
     let count = 0;
     for (let dr = -1; dr <= 1; dr++) {
       for (let dc = -1; dc <= 1; dc++) {
@@ -67,7 +68,7 @@ export class MediumBot extends BotPlayer {
     return count;
   }
 
-  private isIsolated(board: Board, pos: Position, player: Player): boolean {
+  private isIsolated(board: Board, pos: Position, player: Piece): boolean {
     return this.countConnections(board, pos, player) === 0;
   }
 
@@ -75,7 +76,4 @@ export class MediumBot extends BotPlayer {
     return 'Médio';
   }
 
-  getDescription(): string {
-    return 'Prioriza capturas e conexões';
-  }
 }

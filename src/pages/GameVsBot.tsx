@@ -1,26 +1,16 @@
-import React, { useState, useEffect, useRef } from "react";
-import type { Player, Board, Position, Move } from "../types/game";
+import { useState, useEffect, useRef } from "react";
+import { type Piece, type Board, type Position, type Move, BLACK_PIECE, EMPTY_CELL, WHITE_PIECE } from "../types/game";
 import { BotPlayer } from "../bot/BotPlayer";
 import { EasyBot } from "../bot/EasyBot";
 import { MediumBot } from "../bot/MediumBot";
 import { HardBot } from "../bot/HardBot";
 import type { Difficulty } from "../types/game";
-import { formatTime } from "../util/util";
+import { formatTime, generateNewGameBoard } from "../util/util";
 import type { PageType } from "../types/general";
 import "./GameVsBot.css";
 
 
-const INITIAL_BOARD: Board = [
-  [null, "black", "black", "black", "black", "black", "black", null],
-  ["white", null, null, null, null, null, null, "white"],
-  ["white", null, null, null, null, null, null, "white"],
-  ["white", null, null, null, null, null, null, "white"],
-  ["white", null, null, null, null, null, null, "white"],
-  ["white", null, null, null, null, null, null, "white"],
-  ["white", null, null, null, null, null, null, "white"],
-  [null, "black", "black", "black", "black", "black", "black", null],
-];
-
+const INITIAL_BOARD: Board = generateNewGameBoard()
 
 interface GameVsBotProps {
   navigate: (page: PageType, data?: any) => void;
@@ -31,16 +21,16 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
   const [gameStarted, setGameStarted] = useState(false);
   const [bot, setBot] = useState<BotPlayer>(new EasyBot());
   const [board, setBoard] = useState<Board>(INITIAL_BOARD);
-  const [currentPlayer, setCurrentPlayer] = useState<Player>("black");
+  const [currentPlayer, setCurrentPlayer] = useState<Piece>(BLACK_PIECE);
   const [selectedPiece, setSelectedPiece] = useState<Position | null>(null);
   const [validMoves, setValidMoves] = useState<Position[]>([]);
   const [moveHistory, setMoveHistory] = useState<string[]>([]);
   const [gameOver, setGameOver] = useState(false);
-  const [winner, setWinner] = useState<Player>(null);
+  const [winner, setWinner] = useState<Piece | null>(null);
   const [animatingPiece, setAnimatingPiece] = useState<{
     from: Position;
     to: Position;
-    piece: Player;
+    piece: Piece;
   } | null>(null);
   const [blackCaptures, setBlackCaptures] = useState(0);
   const [whiteCaptures, setWhiteCaptures] = useState(0);
@@ -58,7 +48,7 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
   const startGame = () => {
     setBoard(INITIAL_BOARD);
     setBot(instanciateBot());
-    setCurrentPlayer("black");
+    setCurrentPlayer(BLACK_PIECE);
     setSelectedPiece(null);
     setValidMoves([]);
     setMoveHistory([]);
@@ -168,14 +158,14 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
       const r = from.row + dr * i;
       const c = from.col + dc * i;
       if (r < 0 || r >= 8 || c < 0 || c >= 8) break;
-      if (board[r][c] !== null) count++;
+      if (board[r][c] !== EMPTY_CELL) count++;
     }
 
     for (let i = 1; i < 8; i++) {
       const r = from.row - dr * i;
       const c = from.col - dc * i;
       if (r < 0 || r >= 8 || c < 0 || c >= 8) break;
-      if (board[r][c] !== null) count++;
+      if (board[r][c] !== EMPTY_CELL) count++;
     }
 
     count++;
@@ -186,7 +176,7 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
   const getValidMoves = (
     board: Board,
     from: Position,
-    player: Player
+    player: Piece
   ): Position[] => {
     const moves: Position[] = [];
     const directions: [number, number][] = [
@@ -212,7 +202,7 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
       for (let i = 1; i < distance; i++) {
         const r = from.row + dr * i;
         const c = from.col + dc * i;
-        if (board[r][c] !== null && board[r][c] !== player) {
+        if (board[r][c] !== EMPTY_CELL && board[r][c] !== player) {
           pathClear = false;
           break;
         }
@@ -220,7 +210,7 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
 
       if (pathClear) {
         const targetPiece = board[targetRow][targetCol];
-        if (targetPiece === null || targetPiece !== player) {
+        if (targetPiece === EMPTY_CELL || targetPiece !== player) {
           moves.push({ row: targetRow, col: targetCol });
         }
       }
@@ -229,7 +219,7 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
     return moves;
   };
 
-  const getAllValidMoves = (board: Board, player: Player): Move[] => {
+  const getAllValidMoves = (board: Board, player: Piece): Move[] => {
     const allMoves: Move[] = [];
 
     for (let row = 0; row < 8; row++) {
@@ -240,7 +230,7 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
             allMoves.push({
               from: { row, col },
               to,
-              captured: board[to.row][to.col] !== null,
+              captured: board[to.row][to.col] !== EMPTY_CELL,
             });
           });
         }
@@ -250,7 +240,7 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
     return allMoves;
   };
 
-  const isConnected = (board: Board, player: Player): boolean => {
+  const isConnected = (board: Board, player: Piece): boolean => {
     const pieces: Position[] = [];
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
@@ -295,39 +285,39 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
     return visited.size === pieces.length;
   };
 
-  const checkWinner = (board: Board, lastPlayer: Player): Player | null => {
-    const blackConnected = isConnected(board, "black");
-    const whiteConnected = isConnected(board, "white");
+  const checkWinner = (board: Board, lastPlayer: Piece): Piece | null => {
+    const blackConnected = isConnected(board, BLACK_PIECE);
+    const whiteConnected = isConnected(board, WHITE_PIECE);
 
     if (blackConnected && whiteConnected) {
       return lastPlayer;
     }
-    if (blackConnected) return "black";
-    if (whiteConnected) return "white";
+    if (blackConnected) return BLACK_PIECE;
+    if (whiteConnected) return WHITE_PIECE;
 
-    const blackCount = board.flat().filter((p) => p === "black").length;
-    const whiteCount = board.flat().filter((p) => p === "white").length;
+    const blackCount = board.flat().filter((p) => p === BLACK_PIECE).length;
+    const whiteCount = board.flat().filter((p) => p === WHITE_PIECE).length;
 
-    if (blackCount === 1) return "black";
-    if (whiteCount === 1) return "white";
+    if (blackCount === 1) return BLACK_PIECE;
+    if (whiteCount === 1) return WHITE_PIECE;
 
     return null;
   };
 
   const makeMove = (from: Position, to: Position) => {
-    const piece = board[from.row][from.col];
-    const captured = board[to.row][to.col] !== null;
+    const piece: Piece = board[from.row][from.col];
+    const captured: boolean = board[to.row][to.col] !== null;
 
     setAnimatingPiece({ from, to, piece });
 
     setTimeout(() => {
-      const newBoard = board.map((row) => [...row]);
+      const newBoard: Board = board.map((row) => [...row]);
 
-      let newBlackCaptures = blackCaptures;
-      let newWhiteCaptures = whiteCaptures;
+      let newBlackCaptures: number = blackCaptures;
+      let newWhiteCaptures: number = whiteCaptures;
 
       if (captured) {
-        if (currentPlayer === "black") {
+        if (currentPlayer === BLACK_PIECE) {
           newWhiteCaptures++;
           setWhiteCaptures(newWhiteCaptures);
         } else {
@@ -340,11 +330,9 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
       }
 
       newBoard[to.row][to.col] = piece;
-      newBoard[from.row][from.col] = null;
+      newBoard[from.row][from.col] = EMPTY_CELL;
 
-      const notation = `${positionToNotation(from)}${
-        captured ? "x" : "-"
-      }${positionToNotation(to)}`;
+      const notation = `${positionToNotation(from)}${captured ? "x" : "-"}${positionToNotation(to)}`;
       const newMoveHistory = [...moveHistory, notation];
 
       setMoveHistory(newMoveHistory);
@@ -362,7 +350,7 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
         return newBoard;
       }
 
-      const nextPlayer = currentPlayer === "black" ? "white" : "black";
+      const nextPlayer = currentPlayer === BLACK_PIECE ? WHITE_PIECE : BLACK_PIECE;
       const hasValidMoves = getAllValidMoves(newBoard, nextPlayer).length > 0;
 
       if (!hasValidMoves) {
@@ -378,7 +366,7 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
   };
 
   const handleCellClick = (row: number, col: number) => {
-    if (gameOver || currentPlayer !== "black" || animatingPiece) return;
+    if (gameOver || currentPlayer !== BLACK_PIECE || animatingPiece) return;
 
     if (selectedPiece) {
       const isValidMove = validMoves.some(
@@ -390,16 +378,16 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
         setSelectedPiece(null);
         setValidMoves([]);
       }
-    } else if (board[row][col] === "black") {
+    } else if (board[row][col] === BLACK_PIECE) {
       setSelectedPiece({ row, col });
-      setValidMoves(getValidMoves(board, { row, col }, "black"));
+      setValidMoves(getValidMoves(board, { row, col }, BLACK_PIECE));
     }
   };
 
   const makeBotMove = () => {
-    const allMoves = getAllValidMoves(board, "white");
+    const allMoves = getAllValidMoves(board, WHITE_PIECE);
     if (allMoves.length === 0) {
-      setWinner("black");
+      setWinner(BLACK_PIECE);
       setGameOver(true);
       playWinSound();
       return;
@@ -413,7 +401,7 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
 
   useEffect(() => {
     if (
-      currentPlayer === "white" &&
+      currentPlayer === WHITE_PIECE &&
       !gameOver &&
       !animatingPiece &&
       gameStarted
@@ -425,7 +413,7 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
   const resetGame = () => {
     setBoard(INITIAL_BOARD);
     setBot(instanciateBot());
-    setCurrentPlayer("black");
+    setCurrentPlayer(BLACK_PIECE);
     setSelectedPiece(null);
     setValidMoves([]);
     setMoveHistory([]);
@@ -488,10 +476,10 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
     ) {
       return false;
     }
-    return board[row][col] !== null;
+    return board[row][col] !== EMPTY_CELL;
   };
 
-  const getPieceAtPosition = (row: number, col: number): Player => {
+  const getPieceAtPosition = (row: number, col: number): Piece => {
     if (
       animatingPiece &&
       animatingPiece.from.row === row &&
@@ -532,12 +520,12 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
             className="turn-piece"
             style={{
               backgroundColor:
-                currentPlayer === "black" ? "#2B2118" : "#FFF4ED",
-              border: currentPlayer === "white" ? "2px solid #2B2118" : "none",
+                currentPlayer === BLACK_PIECE ? "#2B2118" : "#FFF4ED",
+              border: currentPlayer === WHITE_PIECE ? "2px solid #2B2118" : "none",
             }}
           />
           <span className="turn-text">
-            {currentPlayer === "black" ? "Pretas (Você)" : "Brancas (Bot)"}
+            {currentPlayer === BLACK_PIECE ? "Pretas (Você)" : "Brancas (Bot)"}
           </span>
         </div>
       </div>
@@ -576,7 +564,7 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
                         cursor:
                           gameOver || animatingPiece
                             ? "default"
-                            : (cell === "black" && currentPlayer === "black") ||
+                            : (cell === BLACK_PIECE && currentPlayer === BLACK_PIECE) ||
                               isCellValid(rowIndex, colIndex)
                             ? "pointer"
                             : "default",
@@ -593,11 +581,11 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
                           className="piece"
                           style={{
                             backgroundColor:
-                              getPieceAtPosition(rowIndex, colIndex) === "black"
+                              getPieceAtPosition(rowIndex, colIndex) === BLACK_PIECE
                                 ? "#2B2118"
                                 : "#FFF4ED",
                             border:
-                              getPieceAtPosition(rowIndex, colIndex) === "white"
+                              getPieceAtPosition(rowIndex, colIndex) === WHITE_PIECE
                                 ? "2px solid #2B2118"
                                 : "none",
                             ...getPiecePosition(rowIndex, colIndex),
@@ -643,13 +631,13 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
               <div className="count-row">
                 <span className="count-label">Peças Pretas:</span>
                 <span className="count-value">
-                  {board.flat().filter((p) => p === "black").length}
+                  {board.flat().filter((p) => p === BLACK_PIECE).length}
                 </span>
               </div>
               <div className="count-row">
                 <span className="count-label">Peças Brancas:</span>
                 <span className="count-value">
-                  {board.flat().filter((p) => p === "white").length}
+                  {board.flat().filter((p) => p === WHITE_PIECE).length}
                 </span>
               </div>
             </div>
@@ -684,7 +672,7 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
           <div className="modal-content">
             <h2 className="modal-title">Fim de Jogo!</h2>
             <p className="modal-text">
-              Vencedor: {winner === "black" ? "Pretas (Você)" : "Brancas (Bot)"}
+              Vencedor: {winner === BLACK_PIECE ? "Pretas (Você)" : "Brancas (Bot)"}
             </p>
             <div className="final-stats">
               <div className="final-stat">

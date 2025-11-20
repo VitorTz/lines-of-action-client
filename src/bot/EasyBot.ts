@@ -11,7 +11,4 @@ export class EasyBot extends BotPlayer {
         return 'Fácil';
     }
 
-    getDescription(): string {
-        return 'Faz jogadas aleatórias';
-    }
 }

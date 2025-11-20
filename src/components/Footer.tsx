@@ -8,20 +8,12 @@ const Footer = () => (
       <p className="brand">Lines of Action Web — Jogo online com chat, rankings e gravação de partidas.</p>
       <nav className="links">
         <a
-          href="https://github.com/vitortz/draynor-api"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Code2 size={18} />
-          <span>API Repository</span>
-        </a>
-        <a
-          href="https://github.com/vitortz"
+          href="https://github.com/VitorTz/lines-of-action-client"
           target="_blank"
           rel="noopener noreferrer"
         >
           <GitBranch size={18} />
-          <span>GitHub Profile</span>
+          <span>GitHub</span>
         </a>
       </nav>
     </div>

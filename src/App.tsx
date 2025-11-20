@@ -5,6 +5,7 @@ import { AuthContext } from './context/AuthContext';
 import Router from './components/Router';
 import LoadingPage from './pages/LoadingPage';
 import './App.css';
+import { SocketProvider } from './context/SocketContext';
 
 
 const App = () => {
@@ -53,7 +54,9 @@ const App = () => {
 
   return (
     <AuthContext.Provider value={{ user, setUser, login, signup, logout }}>      
-      <Router />
+      <SocketProvider>
+        <Router />
+      </SocketProvider>
     </AuthContext.Provider>
   );
   
