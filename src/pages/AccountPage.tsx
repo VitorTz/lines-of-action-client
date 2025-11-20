@@ -12,7 +12,7 @@ interface AccountPageProps {
 }
 
 const AccountPage = ({ navigate }: AccountPageProps) => {
-  const { user, logout } = useAuth();
+  const { user, logout, setUser } = useAuth();
   const { addNotification } = useNotification()
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
@@ -45,9 +45,7 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
     try {
       const m = error.response.data.error  
       message = m
-    } catch (err) {
-
-    }
+    } catch (err) { }
 
     addNotification({
       title: "Erro",
@@ -62,13 +60,16 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
     await linesApi
       .user
       .updateProfile(editForm)
-      .then(() => handleSuccess())
+      .then((user) => {handleSuccess(); setUser(user)})
       .catch(err => handleError(err))
+
+    setIsEditing(false)
     setLoading(false)
   };
 
+  console.log(user)
   const handleImageUpload = async (e: any) => {
-    if (!user) return;
+    if (!user) return;    
     
     const file = e.target.files[0];
     if (!file) return;
@@ -79,13 +80,27 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
     }
 
     setUploadingImage(true);
-    setError("");
-    
-    setTimeout(() => {
-      setSuccess("Image uploaded successfully!");
-      setUploadingImage(false);
-    }, 1500);
+      const result = await linesApi
+        .images
+        .upload(file)
+        .then(result => {
+            console.log('Imagem enviada:', result.url);
+            console.log('Nome do arquivo:', result.filename);
+            return result
+        })
+        .catch(err => console.log(err))
+
+      if (result) {
+        const imgSrc = linesApi.images.getImageSrc(result.filename);
+        await linesApi
+          .user
+          .updateProfileImageUrl(imgSrc)
+          .then(user => setUser(user))
+        console.log(imgSrc)
+      }
+    setUploadingImage(false);
   };
+  
 
   const handleCancelEdit = () => {
     setEditForm({
@@ -95,7 +110,6 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
       address: user!.address
     });
     setIsEditing(false);
-    setError("");
   };
 
   const handleLogout = async () => {
@@ -103,9 +117,7 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
     navigate('lobby');
   };
 
-  if (!user) {
-    return <></>;
-  }
+  if (!user) { return <></>; }
 
   return (
     <div className="account-container">
