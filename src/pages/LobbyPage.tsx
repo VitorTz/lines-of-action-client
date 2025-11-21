@@ -1,113 +1,54 @@
 import { useEffect, useState } from "react";
-import { User as UserIcon, Bot } from "lucide-react";
+import BotsTab from "../components/BotsTab";
 import type { PageType } from "../types/general";
 import "./LobbyPage.css";
 import { useSocket } from "../socket/useSocket";
+import { useNotification } from "../components/notification/NotificationContext";
+import { useAuth } from "../components/auth/AuthContext";
+import PlayersTab from "../components/PlayersTab";
+
 
 type ActiveTab = "players" | "bots";
 
-interface PlayersTabProps {
-  navigate: (page: PageType, data?: any) => void;
-}
-
-// Apenas para mostrar como ficaria
-// Os dados virão do websocket
-const PlayersTab = ({ navigate }: PlayersTabProps) => {
-
-  const socket = useSocket()
-  const [numPlayersOnLobby, setNumPlayersOnLobby] = useState(0)
-
-  useEffect(() => {
-    socket.emit('num-players-on-lobby')
-
-    socket.on('num-players-on-lobby', (num) => {
-      console.log("num", num)
-      setNumPlayersOnLobby(parseInt(num))
-    })
-
-  }, [])
-
-  return <></>
-};
-
-interface BotsTabProps {
-  navigate: (page: PageType, data?: any) => void;
-}
-
-const BotsTab = ({ navigate }: BotsTabProps) => (
-  <ul className="player-list">
-    {/* Bot 1 (Fácil) */}
-    <li className="player-item">
-      <div className="player-info">
-        <div className="player-icon">
-          <Bot />
-        </div>
-        <div>
-          <div className="username">Bot (Fácil)</div>
-          <div className="status">Faz jogadas aleatórias</div>
-        </div>
-      </div>
-      <button
-        className="btn btn-primary"
-        onClick={() => navigate("game-bot", "easy")}
-      >
-        Jogar
-      </button>
-    </li>
-
-    {/* Bot 2 (Médio) */}
-    <li className="player-item">
-      <div className="player-info">
-        <div className="player-icon">
-          <Bot />
-        </div>
-        <div>
-          <div className="username">Bot (Médio)</div>
-          <div className="status">Prioriza capturas e conexões</div>
-        </div>
-      </div>
-      <button
-        className="btn btn-primary"
-        onClick={() => navigate("game-bot", "medium")}
-      >
-        Jogar
-      </button>
-    </li>
-
-    {/* Bot 3 (Difícil) */}
-    <li className="player-item">
-      <div className="player-info">
-        <div className="player-icon">
-          <Bot />
-        </div>
-        <div>
-          <div className="username">Bot (Difícil)</div>
-          <div className="status">Minimax</div>
-        </div>
-      </div>
-      <button
-        className="btn btn-primary"
-        onClick={() => navigate("game-bot", "hard")}
-      >
-        Jogar
-      </button>
-    </li>
-  </ul>
-);
 
 interface LobbyPageProps {
   navigate: (page: PageType, data?: any) => void;
 }
 
 const LobbyPage = ({ navigate }: LobbyPageProps) => {
+  
+  const { addNotification } = useNotification()  
+  const { user } = useAuth()
   const [activeTab, setActiveTab] = useState<ActiveTab>("players");
+  const [searching, setSearching] = useState(false)
   const socket = useSocket()
 
-  useEffect(() => {
-    socket.on("echo", (data) => {
-      console.log("echo:", data);
-    });
+  useEffect(() => {    
+
+    socket.on('lobby-cancelled', (msg) => {
+        addNotification({
+          title: msg,
+          type: "success"
+        })
+    })    
+    
+    return () => { socket.emit('handleCancelLobby') }
   }, []);
+
+  const handleEnterLobby = () => {
+    setSearching(true)
+    if (!user) { 
+      addNotification({
+        title: "Não foi possível concluir a ação",
+        message: "Você precisa estar logado",
+        duration: 5000,
+        type: "error"
+      })
+      setSearching(false)
+      return
+    }
+    socket.emit("join-lobby", {playerId: user.id, rank: user.rank})
+  }
 
   return (
     <div className="app-container">
@@ -139,9 +80,25 @@ const LobbyPage = ({ navigate }: LobbyPageProps) => {
         </main>
 
         {activeTab === "players" && (
-          <footer className="lobby-footer">
-            <button className="btn btn-accent">Novo Jogo</button>
-          </footer>
+          <>
+          {
+            searching ?
+            <footer className="lobby-footer">
+              <button 
+                className="btn btn-accent">
+                Procurando adversários
+              </button>
+            </footer>
+            :
+            <footer className="lobby-footer">
+              <button 
+                onKeyDown={handleEnterLobby}
+                className="btn btn-accent">
+                Entrar na fila
+              </button>
+            </footer>
+          }
+          </>
         )}
       </div>
     </div>

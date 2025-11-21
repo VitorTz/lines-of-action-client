@@ -2,6 +2,7 @@ import { type ReactNode, useEffect, useMemo } from "react";
 import { getSocket } from "./socket";
 import { SocketContext } from "./socketContext";
 import { setupHeartbeat } from "./socketHeartBeat";
+import { useNotification } from "../components/notification/NotificationContext";
 
 
 interface Props {
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export function SocketProvider({ children }: Props) {
+    const { addNotification } = useNotification()
   const socket = useMemo(() => getSocket(), []);
 
   useEffect(() => {
@@ -27,6 +29,20 @@ export function SocketProvider({ children }: Props) {
     socket.on("reconnect_attempt", (attempt) => {
       console.log("Trying to reconnect...", attempt);
     });
+
+    socket.on("error", (msg) => {
+      addNotification({
+        title: msg.message,
+        type: "error"
+      })
+    })
+
+    socket.on("searching", () => {
+      addNotification({
+        title: "Procurando adversário...",
+        type: "info",
+      })
+    })
 
     return () => {
       cleanupHeartbeat();

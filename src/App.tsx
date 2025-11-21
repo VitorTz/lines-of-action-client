@@ -20,13 +20,13 @@ const AppContent = () => {
 
 const App = () => {
   return (
-    <SocketProvider>
-      <NotificationProvider>
+    <NotificationProvider>
+      <SocketProvider>
         <AuthProvider>
           <AppContent />
         </AuthProvider>
-      </NotificationProvider>
-    </SocketProvider>
+      </SocketProvider>
+    </NotificationProvider>
   );
 };
 
