@@ -1,86 +1,51 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 import type { PageType } from '../types/general';
-import { Trophy } from 'lucide-react';
-import './MatchHistoryPage.css'
-
-
-const DefeatIcon: React.FC = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="18" y1="6" x2="6" y2="18"></line>
-    <line x1="6" y1="6" x2="18" y2="18"></line>
-  </svg>
-);
+import './MatchHistoryPage.css';
+import { linesApi } from '../api/linesApi';
+import type { Game } from '../types/game';
+import GameHistory from '../components/GameHistory';
 
 
 interface MatchHistoryPageProps {
-
-    navigate: (page: PageType, data?: any) => void
-
+  navigate: (page: PageType, data?: any) => void;
 }
 
 
 const MatchHistoryPage = ({ navigate }: MatchHistoryPageProps) => {
+  const [games, setGames] = useState<Game[]>([]);
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        const result = await linesApi.game.matchHistory();
+        setGames(result);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    init();
+  }, []);
 
   return (
-    <div className="app-container">      
-      <div className="history-card">        
+    <div className="app-container">
+      <div className="history-card">
+
         <header className="history-header">
-          <h1>Histórico de Partidas</h1>
-          <p>Reveja seus jogos passados</p>
+          <h1>Match History</h1>
         </header>
+
         <main className="history-content">
           <ul className="match-list">
-            <li className="match-item">
-              <div className="match-result-icon victory">
-                <Trophy />
-              </div>
-              <div className="match-info">
-                <div className="opponent">vs. A</div>
-                <div className="details">Vitória - 12/11/2025</div>
-              </div>
-              <button className="btn btn-secondary">
-                Rever
-              </button>
-            </li>            
-            <li className="match-item">
-              <div className="match-result-icon defeat">
-                <DefeatIcon />
-              </div>
-              <div className="match-info">
-                <div className="opponent">vs. B</div>
-                <div className="details">Derrota - 11/11/2025</div>
-              </div>
-              <button className="btn btn-secondary">
-                Rever
-              </button>
-            </li>                
-            <li className="match-item">
-              <div className="match-result-icon victory">
-                <Trophy />
-              </div>
-              <div className="match-info">
-                <div className="opponent">vs. Bot (Difícil)</div>
-                <div className="details">Vitória - 10/11/2025</div>
-              </div>
-              <button className="btn btn-secondary">
-                Rever
-              </button>
-            </li>
-            
-            <li className="match-item">
-              <div className="match-result-icon defeat">
-                <DefeatIcon />
-              </div>
-              <div className="match-info">
-                <div className="opponent">vs. C</div>
-                <div className="details">Derrota - 09/11/2025</div>
-              </div>
-              <button className="btn btn-secondary">
-                Rever
-              </button>
-            </li>
+            {games.map((g, idx) => (
+              <GameHistory
+                key={idx}
+                game={g}
+                onReview={() => null}
+              />
+            ))}
           </ul>
-        </main>        
+        </main>
+
       </div>
     </div>
   );

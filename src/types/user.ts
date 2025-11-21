@@ -35,7 +35,7 @@ export interface SignupForm {
   password: string;
   age: number;
   address: Address;
-  perfilImageUrl: string | null;
+  perfilImageFile?: File | null
 
 }
 

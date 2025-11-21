@@ -67,7 +67,6 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
     setLoading(false)
   };
 
-  console.log(user)
   const handleImageUpload = async (e: any) => {
     if (!user) return;    
     
@@ -83,11 +82,7 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
       const result = await linesApi
         .images
         .upload(file)
-        .then(result => {
-            console.log('Imagem enviada:', result.url);
-            console.log('Nome do arquivo:', result.filename);
-            return result
-        })
+        .then(result => { return result })
         .catch(err => console.log(err))
 
       if (result) {
@@ -125,13 +120,14 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
         {/* Header com imagem de perfil */}
         <div className="account-header">
           <div className="profile-image-container">
-            <div className="profile-image">
-              {!user.perfilImageUrl && (
-                <span className="profile-initial">
-                  {user.username.charAt(0).toUpperCase()}
-                </span>
-              )}
-            </div>
+            {
+              user.perfilImageUrl ?
+              <img src={user.perfilImageUrl} alt="" className="profile-image"  /> 
+              :
+              <span className="profile-initial">
+                {user.username.charAt(0).toUpperCase()}
+              </span>
+            }
             
             <label htmlFor="profile-image" className="camera-button">
               {uploadingImage ? (

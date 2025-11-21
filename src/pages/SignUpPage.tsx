@@ -6,14 +6,16 @@ import ProfileImagePicker from "../components/ProfileImagePicker";
 import AddressForm from "../components/AddressForm";
 import "./AuthPage.css";
 import { useNotification } from "../components/notification/NotificationContext";
+import { linesApi } from "../api/linesApi";
 
 interface SignupPageProps {
   navigate: (page: PageType, data?: any) => void;
 }
 
 const SignupPage = ({ navigate }: SignupPageProps) => {
+  
   const { addNotification } = useNotification();
-  const { signup } = useAuth();
+  const { setUser, signup } = useAuth();
 
   const handleSuccess = (username: string) => {
     addNotification({
@@ -33,13 +35,22 @@ const SignupPage = ({ navigate }: SignupPageProps) => {
     });
   };
 
+  const showImageUploadNotification = () => {
+    addNotification({
+      title: "Aguarde...",
+      message: "Fazendo upload da sua foto de perfil",
+      type: "success",
+      duration: 3000,
+    });
+  }
+
   const methods = useForm<SignupForm>({
     defaultValues: {
       username: "",
       email: "",
       password: "",
       age: 0,
-      perfilImageUrl: null,
+      perfilImageFile: null,
       address: {
         country: "",
         state: "",
@@ -58,11 +69,6 @@ const SignupPage = ({ navigate }: SignupPageProps) => {
   const onSubmit = async (signupForm: SignupForm) => {
     const { ok, error } = await signup(signupForm);
 
-    if (ok) {
-      handleSuccess(signupForm.username);
-      navigate("login");
-    }
-
     if (error) {
       try {
         const message: string = error.response.data.error
@@ -70,7 +76,30 @@ const SignupPage = ({ navigate }: SignupPageProps) => {
       } catch (err) {
         handleError('Não foi possível criar sua conta, verifique as informações.')
       }
+      return
     }
+
+    if (signupForm.perfilImageFile) {
+      showImageUploadNotification()
+      const result = await linesApi
+        .images
+        .upload(signupForm.perfilImageFile)
+        .then(result => { return result })
+        .catch(err => console.log(err))
+
+      if (result) {
+        const imgSrc = linesApi.images.getImageSrc(result.filename);
+        await linesApi
+          .user
+          .updateProfileImageUrl(imgSrc)
+          .then(user => setUser(user))
+        console.log(imgSrc)
+      }
+    }
+    
+    handleSuccess(signupForm.username);
+    navigate("login");
+
   };
 
   return (
@@ -112,7 +141,7 @@ const SignupPage = ({ navigate }: SignupPageProps) => {
             <h3>Profile Image</h3>
             <Controller
               control={control}
-              name="perfilImageUrl"
+              name="perfilImageFile"
               render={({ field }) => (
                 <ProfileImagePicker
                   value={field.value}

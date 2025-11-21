@@ -1,32 +1,44 @@
-import { useRef } from "react";
-import './ProfileImagePicker.css';
+import { useRef, useEffect, useState } from "react";
+import "./ProfileImagePicker.css";
 
 interface ProfileImagePickerProps {
-  value: string | null;
-  onChange: (val: string | null) => void;
+  value: File | null | undefined;
+  onChange: (val: File | null) => void;
 }
 
+
 const ProfileImagePicker = ({ value, onChange }: ProfileImagePickerProps) => {
+  
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  
+  useEffect(() => {
+    if (!value) {
+      setPreviewUrl(null);
+      return;
+    }
+
+    const url = URL.createObjectURL(value);
+    setPreviewUrl(url);
+
+    return () => URL.revokeObjectURL(url);
+  }, [value]);
 
   const handleFile = (file: File) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      onChange(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+    onChange(file);
   };
 
   return (
     <div className="main-container">
       <div className="image-wrapper">
-        {value ? (
-          <img src={value} alt="Profile preview" className="profile-img" />
+        {previewUrl ? (
+          <img src={previewUrl} alt="Profile preview" className="profile-img" />
         ) : (
           <div className="profile-img-placeholder">No Image</div>
         )}
       </div>
 
+      {/* Hidden default file picker */}
       <input
         ref={fileInputRef}
         type="file"
@@ -38,21 +50,18 @@ const ProfileImagePicker = ({ value, onChange }: ProfileImagePickerProps) => {
       />
 
       <div className="button-row">
-  <button
-    type="button"
-    onClick={() => fileInputRef.current?.click()}
-  >
-    Select Image
-  </button>
+        <button type="button" onClick={() => fileInputRef.current?.click()}>
+          Select Image
+        </button>
 
-  <label htmlFor="camera-capture" style={{ width: "100%" }}>
-    <button type="button" style={{ width: "100%" }}>
-      Take Photo
-    </button>
-  </label>
-</div>
+        <label htmlFor="camera-capture" style={{ width: "100%" }}>
+          <button type="button" style={{ width: "100%" }}>
+            Take Photo
+          </button>
+        </label>
+      </div>
 
-
+      {/* Camera capture */}
       <input
         type="file"
         accept="image/*"
