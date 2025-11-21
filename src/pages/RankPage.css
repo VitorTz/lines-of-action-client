@@ -1,0 +1,82 @@
+
+
+.metrics-container {
+  padding: 32px;
+  max-width: 800px;
+  margin: auto;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: bold;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+
+.filters-card {
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+  border: 1px solid var(--border);
+}
+
+.filter-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.filter-row label {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.filter-row input,
+.filter-row select {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--border-radius);
+  background: var(--light);
+  color: var(--text);
+}
+
+.apply-btn {
+  width: 100%;
+  padding: 10px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.list-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  padding: 12px;
+}
+
+.user-item {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.user-item:last-child {
+  border-bottom: none;
+}
+
+.user-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.user-meta {
+  font-size: 14px;
+  color: var(--text-light);
+}

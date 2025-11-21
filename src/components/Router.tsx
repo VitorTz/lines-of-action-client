@@ -12,6 +12,7 @@ import ProjectDescriptionPage from "../pages/ProjectDescriptionPage";
 import MatchHistoryPage from "../pages/MatchHistoryPage";
 import GameVsBot from "../pages/GameVsBot";
 import GlobalChatPage from "../pages/GlobalChat";
+import RankPage from "../pages/RankPage";
 
 
 const Router = () => {
@@ -35,6 +36,7 @@ const Router = () => {
     if (clean === "match-history") return { page: "match-history", data: null };
     if (clean === "about") return { page: "about", data: null}
     if (clean === "global-chat") return { page: "global-chat", data: null }
+    if (clean == "rank") return { page: "rank", data: null }
     return { page: "lobby", data: null };
   };
 
@@ -105,7 +107,13 @@ const Router = () => {
 
   
   const renderPage = () => {
-    if (!user && !["signup", "login", "project-description", "about"].includes(currentPage)) {
+    if (!user && ![
+        "signup", 
+        "login", 
+        "project-description", 
+        "about",
+        "rank"
+      ].includes(currentPage)) {
       return <LoginPage navigate={navigate} /> 
     }
     switch (currentPage) {
@@ -127,6 +135,8 @@ const Router = () => {
         return <MatchHistoryPage navigate={navigate} />
       case 'game-bot':
         return <GameVsBot navigate={navigate} difficulty={pageData} />
+      case 'rank':
+        return <RankPage navigate={navigate}/>
       default:
         return <LobbyPage navigate={navigate} />;
     }

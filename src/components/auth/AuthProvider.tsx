@@ -25,8 +25,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return await linesApi.auth
       .login(email, password)
       .then((u) => {
-        setUser(u);
-        return true;
+        setUser(u); return true;
       })
       .catch((err) => {
         console.error("Login failed:", err);

@@ -6,6 +6,7 @@ import {
   Info,
   ChartArea,
   MessageCircle,
+  Trophy,
 } from "lucide-react";
 import type { PageType } from "../types/general";
 import { useState, useEffect, useRef } from "react";
@@ -101,6 +102,16 @@ const Header = ({ navigate }: HeaderProps) => {
                   <History size={18} /> Match History
                 </button>
               }
+
+              <button
+                onClick={() => {
+                  navigate("rank");
+                  setHamburgerOpen(false);
+                }}
+              >
+                <Trophy size={18} /> Rank
+              </button>
+
               <button
                 onClick={() => {
                   navigate("project-description");

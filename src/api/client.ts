@@ -5,7 +5,7 @@ import axios, {
 } from 'axios';
 
 
-const MONGODB_BASE_URL = "http://localhost:3001/api/v1"
+const MONGODB_BASE_URL = "http://localhost:3000/api/v1"
 
 
 class ApiClient {
