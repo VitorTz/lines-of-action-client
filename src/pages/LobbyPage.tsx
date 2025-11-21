@@ -146,13 +146,13 @@ const LobbyPage = ({ navigate }: LobbyPageProps) => {
               activeTab === "players" ? "tab-active" : ""
             }`}
           >
-            Jogadores Reais
+            Players
           </button>
           <button
             onClick={() => setActiveTab("bots")}
             className={`tab-button ${activeTab === "bots" ? "tab-active" : ""}`}
           >
-            Jogar contra Bot
+            Bots
           </button>
         </nav>
 

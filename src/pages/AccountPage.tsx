@@ -5,10 +5,11 @@ import './AccountPage.css'
 import { formatDate } from "../util/util";
 import { linesApi } from "../api/linesApi";
 import { useNotification } from "../components/notification/NotificationContext";
+import type { PageType } from "../types/general";
 
 
 interface AccountPageProps {
-  navigate: (page: string, data?: any) => void;
+  navigate: (page: PageType, data?: any) => void;
 }
 
 const AccountPage = ({ navigate }: AccountPageProps) => {

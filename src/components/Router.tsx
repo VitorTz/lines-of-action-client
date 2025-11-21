@@ -11,6 +11,7 @@ import { useAuth } from "./auth/AuthContext";
 import ProjectDescriptionPage from "../pages/ProjectDescriptionPage";
 import MatchHistoryPage from "../pages/MatchHistoryPage";
 import GameVsBot from "../pages/GameVsBot";
+import GlobalChatPage from "../pages/GlobalChat";
 
 
 const Router = () => {
@@ -33,6 +34,7 @@ const Router = () => {
     if (clean === "signup") return { page: "signup", data: null };
     if (clean === "match-history") return { page: "match-history", data: null };
     if (clean === "about") return { page: "about", data: null}
+    if (clean === "global-chat") return { page: "global-chat", data: null }
     return { page: "lobby", data: null };
   };
 
@@ -103,12 +105,14 @@ const Router = () => {
 
   
   const renderPage = () => {
-    if (!user && !["signup", "login"].includes(currentPage)) {
+    if (!user && !["signup", "login", "project-description", "about"].includes(currentPage)) {
       return <LoginPage navigate={navigate} /> 
     }
     switch (currentPage) {
       case "account":
         return <AccountPage navigate={navigate} />;
+      case "global-chat":
+        return <GlobalChatPage navigate={navigate} />
       case "lobby":
         return <LobbyPage navigate={navigate} />;
       case "login":

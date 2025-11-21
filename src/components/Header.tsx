@@ -1,4 +1,12 @@
-import { User, Menu, X, History, Info } from "lucide-react";
+import {
+  User,
+  Menu,
+  X,
+  History,
+  Info,
+  ChartArea,
+  MessageCircle,
+} from "lucide-react";
 import type { PageType } from "../types/general";
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "./auth/AuthContext";
@@ -9,10 +17,8 @@ interface HeaderProps {
 }
 
 const Header = ({ navigate }: HeaderProps) => {
-  
-    const { user } = useAuth();
+  const { user } = useAuth();
   const [hamburgerOpen, setHamburgerOpen] = useState(false);
-  
 
   const hamburgerRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -53,10 +59,12 @@ const Header = ({ navigate }: HeaderProps) => {
             >
               {user ? (
                 <div className="user-menu" ref={userMenuRef}>
-                  <button onClick={() => {
-                    navigate("account");
-                    setHamburgerOpen(false);
-                    }}>
+                  <button
+                    onClick={() => {
+                      navigate("account");
+                      setHamburgerOpen(false);
+                    }}
+                  >
                     <User size={18} /> {user.username}
                   </button>
                 </div>
@@ -71,21 +79,35 @@ const Header = ({ navigate }: HeaderProps) => {
                   Login
                 </button>
               )}
-              <button
-                onClick={() => {
-                  navigate("match-history");
-                  setHamburgerOpen(false);
-                }}
-              >
-                <History size={18} /> Histórico de Partidas
-              </button>
+              {
+                user &&
+                <button
+                  onClick={() => {
+                    navigate("global-chat");
+                    setHamburgerOpen(false);
+                  }}
+                >
+                  <MessageCircle size={18} /> Global Chat
+                </button>
+              }
+              {
+                user &&
+                <button
+                  onClick={() => {
+                    navigate("match-history");
+                    setHamburgerOpen(false);
+                  }}
+                >
+                  <History size={18} /> Match History
+                </button>
+              }
               <button
                 onClick={() => {
                   navigate("project-description");
                   setHamburgerOpen(false);
                 }}
               >
-                <Info size={18} /> Sobre o Projeto
+                <Info size={18} /> Project
               </button>
               <button
                 onClick={() => {
@@ -93,7 +115,7 @@ const Header = ({ navigate }: HeaderProps) => {
                   setHamburgerOpen(false);
                 }}
               >
-                <Info size={18} /> Sobre o Jogo
+                <Info size={18} /> Game
               </button>
             </div>
           </div>
