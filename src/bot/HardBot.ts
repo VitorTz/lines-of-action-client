@@ -1,9 +1,18 @@
+import { 
+    type Board, 
+    type Move, 
+    type Position, 
+    type Piece, 
+    WHITE_PIECE, 
+    BLACK_PIECE, 
+    EMPTY_CELL 
+} from "../types/game";
 import { BotPlayer } from "./BotPlayer";
-import { type Board, type Move, type Position, type Piece, WHITE_PIECE, BLACK_PIECE, EMPTY_CELL } from "../types/game";
 
 
 export class HardBot extends BotPlayer {
-    private readonly MAX_DEPTH = 2;
+
+    private readonly MAX_DEPTH = 6;
 
     selectMove(board: Board, allMoves: Move[]): Move {
         // Ordenar movimentos: capturas primeiro
@@ -255,6 +264,7 @@ export class HardBot extends BotPlayer {
 
     private getAllValidMoves(board: Board, player: Piece): Move[] {
         const allMoves: Move[] = [];
+        const playerName = player === WHITE_PIECE ? 'white' : 'black'
 
         for (let row = 0; row < 8; row++) {
             for (let col = 0; col < 8; col++) {
@@ -262,9 +272,11 @@ export class HardBot extends BotPlayer {
                     const validMovesForPiece = this.getValidMoves(board, { row, col }, player);
                     validMovesForPiece.forEach(to => {
                         allMoves.push({
+                            player: playerName,
                             from: { row, col },
                             to,
-                            captured: board[to.row][to.col] !== EMPTY_CELL
+                            captured: board[to.row][to.col] !== EMPTY_CELL,
+                            timestamp: new Date()
                         });
                     });
                 }

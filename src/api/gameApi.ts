@@ -4,7 +4,7 @@ import type { Game } from "../types/game";
 
 export class GameApi {
   
-    async matchHistory() {
+  async matchHistory() {
     return await api.get<Game[]>("/game/match/history");
   }
 

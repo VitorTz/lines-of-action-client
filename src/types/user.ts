@@ -16,6 +16,7 @@ export interface User {
   createdAt: string
   age: number
   address: Address
+  rank: number
   
 }
 
