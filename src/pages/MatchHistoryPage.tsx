@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import type { PageType } from '../types/general';
 import './MatchHistoryPage.css';
 import { linesApi } from '../api/linesApi';
-import type { Game } from '../types/game';
-import GameHistory from '../components/GameHistory';
+import type { GameHistory } from '../types/game';
+import GameHistoryComponent from '../components/GameHistory';
 
 
 interface MatchHistoryPageProps {
@@ -12,7 +12,7 @@ interface MatchHistoryPageProps {
 
 
 const MatchHistoryPage = ({ navigate }: MatchHistoryPageProps) => {
-  const [games, setGames] = useState<Game[]>([]);
+  const [games, setGames] = useState<GameHistory[]>([]);
 
   useEffect(() => {
     const init = async () => {
@@ -37,10 +37,10 @@ const MatchHistoryPage = ({ navigate }: MatchHistoryPageProps) => {
         <main className="history-content">
           <ul className="match-list">
             {games.map((g, idx) => (
-              <GameHistory
+              <GameHistoryComponent
                 key={idx}
                 game={g}
-                onReview={() => null}
+                onReview={() => navigate("game-review", g.gameId)}
               />
             ))}
           </ul>

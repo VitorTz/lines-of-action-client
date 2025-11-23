@@ -14,6 +14,7 @@ import GameVsBot from "../pages/GameVsBot";
 import GlobalChatPage from "../pages/GlobalChat";
 import RankPage from "../pages/RankPage";
 import GameVsPlayer from "../pages/GameVsPlayer";
+import GameReview from "../pages/GameReview";
 
 
 const Router = () => {
@@ -32,6 +33,9 @@ const Router = () => {
     } else if (clean.startsWith("game-player")) {
       const t = clean.split("-")
       return { page: 'game-player', data: {gameId: t[2], color: t[3]} }
+    } else if (clean.startsWith("game-review")) {
+      const gameId = clean.split("-")[2]
+      return { page: 'game-review', data: gameId }
     }
 
     if (clean === "account") return { page: "account", data: null };
@@ -103,6 +107,8 @@ const Router = () => {
     }
     else if (page === 'game-player') {
       hash = `#game-player-${data.gameId}-${data.color}`;
+    } else if (page === 'game-review') {
+      hash = `#game-review-${data}`;
     }
     
     window.history.pushState(
@@ -119,7 +125,8 @@ const Router = () => {
         "login", 
         "project-description", 
         "about",
-        "rank"
+        "rank",
+        "game-review"
       ].includes(currentPage)) {
       return <LoginPage navigate={navigate} /> 
     }
@@ -146,6 +153,8 @@ const Router = () => {
         return <GameVsPlayer navigate={navigate} data={pageData} />
       case 'rank':
         return <RankPage navigate={navigate}/>
+      case 'game-review':
+        return <GameReview navigate={navigate} gameId={pageData} />
       default:
         return <LobbyPage navigate={navigate} />;
     }

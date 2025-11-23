@@ -67,32 +67,28 @@ const GameVsPlayer = ({ navigate, data }: GameVsPlayerProps) => {
     if (typeof window !== "undefined" && window.AudioContext) {
       audioContextRef.current = new AudioContext();
     }
-
-    // Entra no jogo via WebSocket
+    
     if (user) {
         console.log("join", { gameId, playerId: user.id })
       socket.emit("join-game", { gameId, playerId: user.id });
     }
-
-    // Listeners de WebSocket
+    
     socket.on("game-state", handleGameState);
     socket.on("move-made", handleMoveMade);
     socket.on("game-over", handleGameOver);
     socket.on("opponent-disconnected-game", handleOpponentDisconnected);
-    socket.on("error", (data) => {
-      addNotification({
-        title: "Erro",
-        message: data.message,
-        type: "error",
-      });
-    });
 
     return () => {
       socket.off("game-state");
       socket.off("move-made");
       socket.off("game-over");
       socket.off("opponent-disconnected-game");
-      socket.off("error");
+      if (gameOver && user) {
+        socket.emit("surrender", {
+          gameId,
+          playerId: user.id,
+        });
+      }
     };
   }, []);
 

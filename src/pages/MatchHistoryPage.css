@@ -97,7 +97,6 @@
   color: var(--text-light);
 }
 
-/* Botões */
 .btn {
   border: none;
   padding: 0.375rem 1rem;
@@ -118,7 +117,6 @@
 .btn-secondary:hover {
   opacity: 0.8;
 }
-
 
 
 .history-footer {

@@ -5,6 +5,7 @@ import { useSocket } from "../socket/useSocket";
 import { useNotification } from "../components/notification/NotificationContext";
 import { useAuth } from "../components/auth/AuthContext";
 import { useLobby } from "../context/LobbyContext";
+import MatchFoundModal from "../components/MatchFountModal";
 import "./LobbyPage.css";
 
 
@@ -111,8 +112,6 @@ const LobbyPage = ({ navigate }: LobbyPageProps) => {
       clearTimer();
       setShowMatchModal(false);
       setOnQueue(false);
-      
-      // Navega para a página do jogo
       navigate("game-player", {
         gameId: data.gameId,
         color: data.color,
@@ -213,9 +212,9 @@ const LobbyPage = ({ navigate }: LobbyPageProps) => {
 
         <main className="lobby-content">
           {activeTab === "players" && (
-            <>
-            {onQueue && <div className="spinner"></div>}              
-            </>
+            <div >
+              {onQueue && <div className="spinner"></div>}
+            </div>            
           )}
           {activeTab === "bots" && <BotsTab navigate={navigate} />}
         </main>
@@ -240,72 +239,16 @@ const LobbyPage = ({ navigate }: LobbyPageProps) => {
       </div>
 
       {/* Modal de Partida Encontrada */}
-      {showMatchModal && matchData && (
-        <div className="modal-overlay">
-          <div className="match-modal">
-            <div className="match-modal-header">
-              <h2>Partida Encontrada!</h2>
-            </div>
-
-            <div className="match-modal-body">
-              <div className="match-info">
-                <div className="player-info">
-                  <span className="label">Você:</span>
-                  <span className="rank">Rank {matchData.yourRank}</span>
-                  <span className={`color-badge ${matchData.yourColor}`}>
-                    {matchData.yourColor === "black" ? "⚫ Preto" : "⚪ Branco"}
-                  </span>
-                </div>
-
-                <div className="vs-divider">VS</div>
-
-                <div className="player-info">
-                  <span className="label">Oponente:</span>
-                  <span className="rank">Rank {matchData.opponentRank}</span>
-                  <span className={`color-badge ${matchData.yourColor}`}>
-                    {matchData.yourColor === "black" ? "⚪ Branco" : "⚫ Preto"}
-                  </span>
-                </div>
-              </div>
-
-              {timeRemaining === -1 ? (
-                <div className="waiting-opponent">
-                  <div className="spinner"></div>
-                  <p>Aguardando oponente aceitar...</p>
-                </div>
-              ) : (
-                <>
-                  <div className="timer-container">
-                    <div
-                      className={`timer ${timeRemaining <= 5 ? "timer-warning" : ""}`}
-                    >
-                      {timeRemaining}s
-                    </div>
-                    <p className="timer-text">
-                      Aceite a partida antes do tempo acabar
-                    </p>
-                  </div>
-
-                  <div className="match-modal-actions">
-                    <button
-                      onClick={handleDeclineMatch}
-                      className="btn btn-secondary"
-                    >
-                      Recusar
-                    </button>
-                    <button
-                      onClick={handleAcceptMatch}
-                      className="btn btn-primary"
-                    >
-                      Aceitar Partida
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      {
+        showMatchModal && 
+        matchData && 
+        <MatchFoundModal 
+          matchData={matchData} 
+          timeRemaining={timeRemaining} 
+          handleAcceptMatch={handleAcceptMatch} 
+          handleDeclineMatch={handleDeclineMatch} 
+        />
+      }
     </div>
   );
 };

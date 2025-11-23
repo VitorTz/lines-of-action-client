@@ -1,3 +1,4 @@
+import type { User } from "./user";
 
 export type Difficulty = 'easy' | 'medium' | 'hard';
 
@@ -47,4 +48,18 @@ export interface Game {
   endedAt: Date;
 
   
+}
+
+
+export interface GameHistory {
+  
+  gameId: string
+  playerBlack: User
+  playerWhite: User
+  winner: User | null
+  gameCreatedAt: Date
+  gameUpdatedAt: Date
+  gameNumMoves: number
+  gameMoves: Move[]
+
 }

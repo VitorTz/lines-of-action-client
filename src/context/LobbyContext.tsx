@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 
-interface MatchData {
+export interface MatchData {
   gameId: number;
   yourColor: string;
   opponentRank: number;

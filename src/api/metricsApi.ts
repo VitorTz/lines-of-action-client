@@ -22,11 +22,6 @@ export interface UserRankResponse {
 
 export class MetricsApi {
   
-  /**
-   * Busca usuários ordenados por rank (ou outras métricas)
-   * Exemplo:
-   * metricsApi.getUserRank({ sort: "rank", limit: 20 })
-   */
   async getUserRank(params?: UserRankQuery) {
     return await api.get<UserRankResponse>("/metrics/users/rank", params);
   }

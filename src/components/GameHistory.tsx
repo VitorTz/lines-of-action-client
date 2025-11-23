@@ -1,16 +1,16 @@
-import type { Game } from "../types/game";
-import React from "react";
-import { Trophy } from "lucide-react";
-import { X } from "lucide-react";
+import type { GameHistory } from "../types/game";
+import { Trophy, X } from "lucide-react";
 
 
-interface GameHistoryProps {
-  game: Game;
+interface GameHistoryComponentProps {
+  game: GameHistory;
   onReview?: () => void;
 }
 
-const GameHistory: React.FC<GameHistoryProps> = ({ game, onReview }) => {
-  const isVictory = !!game.winner;
+
+const GameHistoryComponent = ({ game, onReview }: GameHistoryComponentProps) => {
+  
+  const isVictory = !!game.winner  
 
   return (
     <li className="match-item">
@@ -20,25 +20,22 @@ const GameHistory: React.FC<GameHistoryProps> = ({ game, onReview }) => {
 
       <div className="match-info">
         <div className="opponent">
-          {game.playerBlack} vs {game.playerWhite}
+          {game.playerBlack.username} vs {game.playerWhite.username}
         </div>
 
         <div className="details">
-          Status: {game.status} <br />
-          Winner: {game.winner ?? "None"} <br />
-          Created: {new Date(game.createdAt).toLocaleString()} <br />
-          Updated: {new Date(game.updatedAt).toLocaleString()}
+          Winner: {game.winner ? game.winner.username : "None"} <br />
+          Moves: {game.gameNumMoves} <br />
+          Created: {new Date(game.gameCreatedAt).toLocaleString()} <br />
+          Updated: {new Date(game.gameUpdatedAt).toLocaleString()}
         </div>
       </div>
 
-      <button
-        className="btn btn-secondary"
-        onClick={onReview}
-      >
+      <button className="btn btn-primary" onClick={onReview}>
         Review
       </button>
     </li>
   );
 };
 
-export default GameHistory;
+export default GameHistoryComponent;
