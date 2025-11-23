@@ -53,18 +53,18 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigate }) => {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1>Sign In</h1>
+        <h1>Entrar</h1>
         <form onSubmit={handleSubmit}>
           <input
             type="email"
-            placeholder="Email"
+            placeholder="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
           <input
             type="password"
-            placeholder="password"
+            placeholder="senha"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -73,8 +73,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigate }) => {
           <button type="submit">Login</button>
         </form>
         <p>
-          Don’t have an account?{' '}
-          <a onClick={() => navigate('signup')}>Sign up.</a>
+          Não tem conta?{' '}
+          <a onClick={() => navigate('signup')}>Cadastrar</a>
         </p>
       </div>
     </div>

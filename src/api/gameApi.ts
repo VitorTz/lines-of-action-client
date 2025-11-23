@@ -8,4 +8,8 @@ export class GameApi {
     return await api.get<Game[]>("/game/match/history");
   }
 
+  async getGame(gameId: string) {
+    return await api.get<Game>("/game", gameId)
+  }
+
 }

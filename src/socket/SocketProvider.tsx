@@ -37,13 +37,6 @@ export function SocketProvider({ children }: Props) {
       })
     })
 
-    socket.on("searching", () => {
-      addNotification({
-        title: "Procurando adversário...",
-        type: "info",
-      })
-    })
-
     return () => {
       cleanupHeartbeat();
       socket.disconnect();

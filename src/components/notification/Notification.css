@@ -26,9 +26,9 @@
   --warning-light: #fef3c7;
   --warning-dark: #d97706;
 
-  --info: var(--primary);
-  --info-light: var(--light);
-  --info-dark: var(--secondary);
+  --info: #3987e0;
+  --info-light: #97bbe4;
+  --info-dark: #204d80;
 }
 
 

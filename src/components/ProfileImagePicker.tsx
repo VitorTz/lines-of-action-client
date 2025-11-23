@@ -34,11 +34,10 @@ const ProfileImagePicker = ({ value, onChange }: ProfileImagePickerProps) => {
         {previewUrl ? (
           <img src={previewUrl} alt="Profile preview" className="profile-img" />
         ) : (
-          <div className="profile-img-placeholder">No Image</div>
+          <div className="profile-img-placeholder">Sem imagem</div>
         )}
       </div>
-
-      {/* Hidden default file picker */}
+      
       <input
         ref={fileInputRef}
         type="file"
@@ -51,17 +50,16 @@ const ProfileImagePicker = ({ value, onChange }: ProfileImagePickerProps) => {
 
       <div className="button-row">
         <button type="button" onClick={() => fileInputRef.current?.click()}>
-          Select Image
+          Selecionar
         </button>
 
         <label htmlFor="camera-capture" style={{ width: "100%" }}>
           <button type="button" style={{ width: "100%" }}>
-            Take Photo
+            Tirar foto
           </button>
         </label>
       </div>
-
-      {/* Camera capture */}
+      
       <input
         type="file"
         accept="image/*"
@@ -75,7 +73,7 @@ const ProfileImagePicker = ({ value, onChange }: ProfileImagePickerProps) => {
 
       {value && (
         <button type="button" onClick={() => onChange(null)}>
-          Remove
+          Remover
         </button>
       )}
     </div>

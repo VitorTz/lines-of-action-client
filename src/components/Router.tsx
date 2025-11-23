@@ -13,6 +13,7 @@ import MatchHistoryPage from "../pages/MatchHistoryPage";
 import GameVsBot from "../pages/GameVsBot";
 import GlobalChatPage from "../pages/GlobalChat";
 import RankPage from "../pages/RankPage";
+import GameVsPlayer from "../pages/GameVsPlayer";
 
 
 const Router = () => {
@@ -26,8 +27,11 @@ const Router = () => {
     const clean: string | PageType = hash.replace(/^#/, "");
 
     if (clean.startsWith("game-bot")) {
-      const difficulty =  clean.split("-")[1]
+      const difficulty =  clean.split("-")[2]
       return { page: 'game-bot', data: difficulty }
+    } else if (clean.startsWith("game-player")) {
+      const t = clean.split("-")
+      return { page: 'game-player', data: {gameId: t[2], color: t[3]} }
     }
 
     if (clean === "account") return { page: "account", data: null };
@@ -96,7 +100,10 @@ const Router = () => {
 
     if (page === 'game-bot') {
       hash = `#game-bot-${data}`;
-    }    
+    }
+    else if (page === 'game-player') {
+      hash = `#game-player-${data.gameId}-${data.color}`;
+    }
     
     window.history.pushState(
       { page, data },
@@ -135,6 +142,8 @@ const Router = () => {
         return <MatchHistoryPage navigate={navigate} />
       case 'game-bot':
         return <GameVsBot navigate={navigate} difficulty={pageData} />
+      case "game-player":
+        return <GameVsPlayer navigate={navigate} data={pageData} />
       case 'rank':
         return <RankPage navigate={navigate}/>
       default:

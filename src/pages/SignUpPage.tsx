@@ -105,7 +105,7 @@ const SignupPage = ({ navigate }: SignupPageProps) => {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1>Sign Up</h1>
+        <h1>Cadastro</h1>
 
         <FormProvider {...methods}>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -113,32 +113,32 @@ const SignupPage = ({ navigate }: SignupPageProps) => {
               placeholder="username"
               {...register("username", { required: true })}
             />
-            {errors.username && <div className="error-message">Required</div>}
+            {errors.username && <div className="error-message">Campo obrigatório</div>}
 
             <input
               placeholder="email"
               type="email"
               {...register("email", { required: true })}
             />
-            {errors.email && <div className="error-message">Required</div>}
+            {errors.email && <div className="error-message">Campo obrigatório</div>}
 
             <input
-              placeholder="password"
+              placeholder="senha"
               type="password"
               {...register("password", { required: true })}
             />
-            {errors.password && <div className="error-message">Required</div>}
+            {errors.password && <div className="error-message">Campo obrigatório</div>}
 
             <input
-              placeholder="age"
+              placeholder="idade"
               type="number"
               {...register("age", { required: true, valueAsNumber: true })}
             />
-            {errors.age && <div className="error-message">Required</div>}
+            {errors.age && <div className="error-message">Campo obrigatório</div>}
 
             <AddressForm />
 
-            <h3>Profile Image</h3>
+            <h3>Avatar</h3>
             <Controller
               control={control}
               name="perfilImageFile"
@@ -150,13 +150,13 @@ const SignupPage = ({ navigate }: SignupPageProps) => {
               )}
             />
 
-            <button type="submit">Sign Up</button>
+            <button type="submit">Cadastrar</button>
           </form>
         </FormProvider>
 
         <p>
-          Already have an account?{" "}
-          <a onClick={() => navigate("login")}>Sign In</a>
+          Já tem uma conta?{" "}
+          <a onClick={() => navigate("login")}>Entrar</a>
         </p>
       </div>
     </div>

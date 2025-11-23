@@ -4,7 +4,6 @@ import {
   X,
   History,
   Info,
-  ChartArea,
   MessageCircle,
   Trophy,
 } from "lucide-react";
@@ -88,7 +87,7 @@ const Header = ({ navigate }: HeaderProps) => {
                     setHamburgerOpen(false);
                   }}
                 >
-                  <MessageCircle size={18} /> Global Chat
+                  <MessageCircle size={18} /> Chat Global
                 </button>
               }
               {
@@ -99,7 +98,7 @@ const Header = ({ navigate }: HeaderProps) => {
                     setHamburgerOpen(false);
                   }}
                 >
-                  <History size={18} /> Match History
+                  <History size={18} /> Histórico de partidas
                 </button>
               }
 
@@ -118,7 +117,7 @@ const Header = ({ navigate }: HeaderProps) => {
                   setHamburgerOpen(false);
                 }}
               >
-                <Info size={18} /> Project
+                <Info size={18} /> Sobre o projeto
               </button>
               <button
                 onClick={() => {
@@ -126,7 +125,7 @@ const Header = ({ navigate }: HeaderProps) => {
                   setHamburgerOpen(false);
                 }}
               >
-                <Info size={18} /> Game
+                <Info size={18} /> Sobre o jogo
               </button>
             </div>
           </div>

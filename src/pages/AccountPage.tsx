@@ -188,7 +188,7 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
             <div className="form-field">
               <label className="form-label">
                 <Hash size={18} />
-                Age
+                Idade
               </label>
               <input
                 type="number"
@@ -204,12 +204,12 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
             <div className="address-section">
               <h3 className="address-title">
                 <MapPin size={20} />
-                Address
+                Endereço
               </h3>
               
               <div className="address-grid">
                 <div className="address-field full-width">
-                  <label className="address-label">Country</label>
+                  <label className="address-label">País</label>
                   <input
                     type="text"
                     className={`address-input ${!isEditing ? 'disabled' : ''}`}
@@ -223,7 +223,7 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
                 </div>                
 
                 <div className="address-field">
-                  <label className="address-label">City</label>
+                  <label className="address-label">Cidade</label>
                   <input
                     type="text"
                     className={`address-input ${!isEditing ? 'disabled' : ''}`}
@@ -237,7 +237,7 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
                 </div>
 
                 <div className="address-field">
-                  <label className="address-label">State</label>
+                  <label className="address-label">Estado</label>
                   <input
                     type="text"
                     className={`address-input ${!isEditing ? 'disabled' : ''}`}
@@ -257,7 +257,7 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
             <div className="form-field">
               <label className="form-label">
                 <Calendar size={18} />
-                Created at
+                Criado em
               </label>
               <div className="created-date">
                 {formatDate(user.createdAt)}
@@ -285,7 +285,7 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
             {!isEditing ? (
               <>
                 <button onClick={() => setIsEditing(true)} className="btn btn-primary">
-                  Edit Profile
+                  Editar perfil
                 </button>
                 <button onClick={handleLogout} className="btn btn-danger">
                   <LogOut size={18} />
@@ -298,18 +298,18 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
                   {loading ? (
                     <>
                       <Loader size={18} className="spinner" />
-                      Saving...
+                      Salvando...
                     </>
                   ) : (
                     <>
                       <Check size={18} />
-                      Save Changes
+                      Salvar mudanças
                     </>
                   )}
                 </button>
                 <button onClick={handleCancelEdit} disabled={loading} className="btn btn-secondary">
                   <X size={18} />
-                  Cancel
+                  Cancelar
                 </button>
               </>
             )}

@@ -1,4 +1,4 @@
-import { Code2, GitBranch } from 'lucide-react';
+import { GitBranch } from 'lucide-react';
 import './Footer.css';
 
 

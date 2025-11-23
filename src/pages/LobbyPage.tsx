@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import BotsTab from "../components/BotsTab";
 import type { PageType } from "../types/general";
-import "./LobbyPage.css";
 import { useSocket } from "../socket/useSocket";
 import { useNotification } from "../components/notification/NotificationContext";
 import { useAuth } from "../components/auth/AuthContext";
-import PlayersTab from "../components/PlayersTab";
+import { useLobby } from "../context/LobbyContext";
+import "./LobbyPage.css";
 
 
 type ActiveTab = "players" | "bots";
@@ -15,40 +15,177 @@ interface LobbyPageProps {
   navigate: (page: PageType, data?: any) => void;
 }
 
+
+const MATCH_TIMEOUT_SECONDS = 25;
+
 const LobbyPage = ({ navigate }: LobbyPageProps) => {
-  
-  const { addNotification } = useNotification()  
-  const { user } = useAuth()
+  const socket = useSocket();
+  const { user } = useAuth();
+  const { addNotification } = useNotification();
   const [activeTab, setActiveTab] = useState<ActiveTab>("players");
-  const [searching, setSearching] = useState(false)
-  const socket = useSocket()
+  
+  const {
+    onQueue,
+    setOnQueue,
+    matchData,
+    setMatchData,
+  } = useLobby();
 
-  useEffect(() => {    
+  const [timeRemaining, setTimeRemaining] = useState(MATCH_TIMEOUT_SECONDS);
+  const [showMatchModal, setShowMatchModal] = useState(false);
+  const timerRef = useRef<any>(null);
+  const matchAcceptedRef = useRef(false);
 
-    socket.on('lobby-cancelled', (msg) => {
-        addNotification({
-          title: msg,
-          type: "success"
-        })
-    })    
+  const clearTimer = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+  
+  useEffect(() => {
+    if (matchData && !matchAcceptedRef.current) {
+      setShowMatchModal(true);
+      setTimeRemaining(MATCH_TIMEOUT_SECONDS);
+      matchAcceptedRef.current = false;
+      timerRef.current = setInterval(() => {
+        setTimeRemaining((prev) => {
+          if (prev <= 1) {
+            clearTimer();
+            handleDeclineMatch();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
     
-    return () => { socket.emit('handleCancelLobby') }
-  }, []);
+    return () => { clearTimer(); };
+  }, [matchData]);
 
-  const handleEnterLobby = () => {
-    setSearching(true)
-    if (!user) { 
+  useEffect(() => {
+    // Handler: saiu da fila
+    socket.on("exit-queue", () => {
+      setOnQueue(false);
+      setMatchData(null);
+      setShowMatchModal(false);
+      clearTimer();
+    });
+
+    // Handler: oponente cancelou
+    socket.on("match-cancelled-by-opponent", () => {
+      addNotification({
+        title: "Seu oponente cancelou a partida",
+        type: "info",
+      });
+      setMatchData(null);
+      setOnQueue(false);
+      setShowMatchModal(false);
+      clearTimer();
+      matchAcceptedRef.current = false;
+    });
+
+    // Handler: entrou na fila
+    socket.on("on-queue", () => {
+      setOnQueue(true);
+      addNotification({
+        title: "Procurando adversário...",
+        type: "info",
+      });
+    });
+
+    // Handler: partida encontrada
+    socket.on("match-found", (data) => {
+      setMatchData(data);
+      matchAcceptedRef.current = false;
+      addNotification({
+        title: "Partida encontrada!",
+        message: `Oponente: ${data.opponentUsername}`,
+        type: "success",
+      });
+    });
+
+    // Handler: jogo iniciado
+    socket.on("game-start", (data) => {
+      console.log("Jogo iniciado:", data);
+      clearTimer();
+      setShowMatchModal(false);
+      setOnQueue(false);
+      
+      // Navega para a página do jogo
+      navigate("game-player", {
+        gameId: data.gameId,
+        color: data.color,
+      });
+    });    
+
+    return () => {
+      socket.off("exit-queue");
+      socket.off("match-cancelled-by-opponent");
+      socket.off("num-players-on-lobby");
+      socket.off("on-queue");
+      socket.off("match-found");
+      socket.off("game-start");      
+      if (user) { socket.emit("exit-queue", { playerId: user.id }); }
+      clearTimer();
+    };
+  }, [user, socket]);
+
+  const handleJoinQueue = () => {
+    if (!user) {
       addNotification({
         title: "Não foi possível concluir a ação",
         message: "Você precisa estar logado",
         duration: 5000,
-        type: "error"
-      })
-      setSearching(false)
-      return
+        type: "error",
+      });
+      return;
     }
-    socket.emit("join-lobby", {playerId: user.id, rank: user.rank})
-  }
+    socket.emit("join-queue", { playerId: user.id, rank: user.rank });
+  };
+
+  const handleExitQueue = () => {
+    if (!user) {
+      addNotification({
+        title: "Não foi possível concluir a ação",
+        message: "Você precisa estar logado",
+        duration: 5000,
+        type: "error",
+      });
+      return;
+    }
+    socket.emit("exit-queue", { playerId: user.id });
+  };
+
+  const handleAcceptMatch = () => {
+    if (!user || !matchData) return;
+    
+    matchAcceptedRef.current = true;
+    clearTimer();
+    
+    socket.emit("match-ready", {
+      playerId: user.id,
+      gameId: matchData.gameId,
+    });
+        
+    setTimeRemaining(-1);
+  };
+
+  const handleDeclineMatch = () => {
+    if (!user) return;
+    
+    matchAcceptedRef.current = false;
+    clearTimer();
+    setShowMatchModal(false);
+    setMatchData(null);
+    
+    socket.emit("exit-queue", { playerId: user.id });
+    
+    addNotification({
+      title: "Você recusou a partida",
+      type: "info",
+    });
+  };
 
   return (
     <div className="app-container">
@@ -64,7 +201,7 @@ const LobbyPage = ({ navigate }: LobbyPageProps) => {
               activeTab === "players" ? "tab-active" : ""
             }`}
           >
-            Players
+            Pessoas
           </button>
           <button
             onClick={() => setActiveTab("bots")}
@@ -75,32 +212,100 @@ const LobbyPage = ({ navigate }: LobbyPageProps) => {
         </nav>
 
         <main className="lobby-content">
-          {activeTab === "players" && <PlayersTab navigate={navigate} />}
+          {activeTab === "players" && (
+            <>
+            {onQueue && <div className="spinner"></div>}              
+            </>
+          )}
           {activeTab === "bots" && <BotsTab navigate={navigate} />}
         </main>
 
         {activeTab === "players" && (
           <>
-          {
-            searching ?
-            <footer className="lobby-footer">
-              <button 
-                className="btn btn-accent">
-                Procurando adversários
-              </button>
-            </footer>
-            :
-            <footer className="lobby-footer">
-              <button 
-                onKeyDown={handleEnterLobby}
-                className="btn btn-accent">
-                Entrar na fila
-              </button>
-            </footer>
-          }
+            {onQueue ? (
+              <footer className="lobby-footer">
+                <button onClick={handleExitQueue} className="btn btn-accent">
+                  Sair da fila
+                </button>
+              </footer>
+            ) : (
+              <footer className="lobby-footer">
+                <button onClick={handleJoinQueue} className="btn btn-accent">
+                  Entrar na fila
+                </button>
+              </footer>
+            )}
           </>
         )}
       </div>
+
+      {/* Modal de Partida Encontrada */}
+      {showMatchModal && matchData && (
+        <div className="modal-overlay">
+          <div className="match-modal">
+            <div className="match-modal-header">
+              <h2>Partida Encontrada!</h2>
+            </div>
+
+            <div className="match-modal-body">
+              <div className="match-info">
+                <div className="player-info">
+                  <span className="label">Você:</span>
+                  <span className="rank">Rank {matchData.yourRank}</span>
+                  <span className={`color-badge ${matchData.yourColor}`}>
+                    {matchData.yourColor === "black" ? "⚫ Preto" : "⚪ Branco"}
+                  </span>
+                </div>
+
+                <div className="vs-divider">VS</div>
+
+                <div className="player-info">
+                  <span className="label">Oponente:</span>
+                  <span className="rank">Rank {matchData.opponentRank}</span>
+                  <span className={`color-badge ${matchData.yourColor}`}>
+                    {matchData.yourColor === "black" ? "⚪ Branco" : "⚫ Preto"}
+                  </span>
+                </div>
+              </div>
+
+              {timeRemaining === -1 ? (
+                <div className="waiting-opponent">
+                  <div className="spinner"></div>
+                  <p>Aguardando oponente aceitar...</p>
+                </div>
+              ) : (
+                <>
+                  <div className="timer-container">
+                    <div
+                      className={`timer ${timeRemaining <= 5 ? "timer-warning" : ""}`}
+                    >
+                      {timeRemaining}s
+                    </div>
+                    <p className="timer-text">
+                      Aceite a partida antes do tempo acabar
+                    </p>
+                  </div>
+
+                  <div className="match-modal-actions">
+                    <button
+                      onClick={handleDeclineMatch}
+                      className="btn btn-secondary"
+                    >
+                      Recusar
+                    </button>
+                    <button
+                      onClick={handleAcceptMatch}
+                      className="btn btn-primary"
+                    >
+                      Aceitar Partida
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

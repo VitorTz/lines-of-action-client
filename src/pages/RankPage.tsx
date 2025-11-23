@@ -41,34 +41,34 @@ const RankPage = ( { navigate }: RankPageProps) => {
 
   return (
     <div className="metrics-container">
-      <h1 className="title">User Ranking</h1>
+      <h1 className="title">Ranking de usuários</h1>
 
       <div className="filters-card">
         <div className="filter-row">
-          <label>Sort by:</label>
+          <label>Ordenar por:</label>
           <select
             value={filters.sort}
             onChange={(e) => update("sort", e.target.value)}
           >
             <option value="rank">Rank</option>
-            <option value="age">Age</option>
-            <option value="createdAt">Created At</option>
+            <option value="age">Idade</option>
+            <option value="createdAt">Criado em</option>
           </select>
         </div>
 
         <div className="filter-row">
-          <label>Order:</label>
+          <label>Ordem:</label>
           <select
             value={filters.order}
             onChange={(e) => update("order", e.target.value)}
           >
-            <option value="desc">Descending</option>
-            <option value="asc">Ascending</option>
+            <option value="desc">Decrescente</option>
+            <option value="asc">Ascendente</option>
           </select>
         </div>
 
         <div className="filter-row">
-          <label>Min Rank:</label>
+          <label>Rank mínimo:</label>
           <input
             type="number"
             onChange={(e) => update("minRank", Number(e.target.value))}
@@ -76,7 +76,7 @@ const RankPage = ( { navigate }: RankPageProps) => {
         </div>
 
         <div className="filter-row">
-          <label>Max Rank:</label>
+          <label>Rank máximo:</label>
           <input
             type="number"
             onChange={(e) => update("maxRank", Number(e.target.value))}
@@ -84,7 +84,7 @@ const RankPage = ( { navigate }: RankPageProps) => {
         </div>
 
         <div className="filter-row">
-          <label>Limit:</label>
+          <label>Limite:</label>
           <input
             type="number"
             defaultValue={20}
@@ -93,7 +93,7 @@ const RankPage = ( { navigate }: RankPageProps) => {
         </div>
 
         <button className="apply-btn" onClick={load} disabled={loading}>
-          {loading ? "Loading..." : "Apply"}
+          {loading ? "Carregando..." : "Aplicar"}
         </button>
       </div>
 
@@ -103,7 +103,11 @@ const RankPage = ( { navigate }: RankPageProps) => {
             <div className="user-info">
               <div className="user-name">{u.username}</div>
               <div className="user-meta">
-                Rank: {u.rank} • Age: {u.age}
+                {
+                  u.perfilImageUrl &&
+                  <img src={u.perfilImageUrl} width={64} height={64} style={{borderRadius: '64px'}} />
+                }                
+                Rank: {u.rank}
               </div>
             </div>
           </div>
