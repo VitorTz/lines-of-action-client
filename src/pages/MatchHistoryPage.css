@@ -17,11 +17,13 @@
   border: 1px solid var(--border);
 }
 
-/* Header (Reutilizado) */
+
 .history-header {
   padding: 1.25rem;
   border-bottom: 1px solid var(--border);
 }
+
+
 .history-header h1 {
   font-size: 1.5rem;
   font-weight: 700;
@@ -29,6 +31,8 @@
   color: var(--text);
   margin: 0;
 }
+
+
 .history-header p {
   text-align: center;
   font-size: 0.875rem;
@@ -36,7 +40,6 @@
   margin: 0.25rem 0 0 0;
 }
 
-/* 4. Estilos Específicos da Página "Histórico" */
 
 .history-content {
   max-height: 70vh;
@@ -64,7 +67,7 @@
   background-color: var(--light);
 }
 
-/* Ícone de Resultado (Vitória/Derrota) */
+
 .match-result-icon {
   width: 2.5rem;
   height: 2.5rem;
@@ -77,10 +80,10 @@
   box-shadow: var(--shadow-sm);
 }
 .match-result-icon.victory {
-  color: var(--accent); /* Cor de destaque para vitória */
+  color: var(--accent);
 }
 .match-result-icon.defeat {
-  color: var(--primary); /* Cor primária (vermelho) para derrota */
+  color: var(--primary);
 }
 
 .match-info {
@@ -138,4 +141,66 @@
 
 .btn-accent:hover {
   opacity: 0.9;
+}
+
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.tab-btn-min {
+  background: none;
+  border: none;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.5rem 0;
+  color: var(--text-light);
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.tab-btn-min:hover {
+  color: var(--text);
+}
+
+.tab-btn-min.active {
+  color: var(--accent);
+}
+
+.tab-btn-min.active::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+  animation: underline 0.25s ease-out;
+}
+
+@keyframes underline {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+
+.fade-in {
+  animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+
+.loading {
+  text-align: center;
+  padding: 1rem;
+  color: var(--text-light);
 }

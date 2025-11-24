@@ -1,38 +1,35 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Send, User, Circle, Users } from "lucide-react";
+import { Send, Users, Circle } from "lucide-react";
 import type { PageType } from "../types/general";
 import { useAuth } from "../components/auth/AuthContext";
-import './GlobalChat.css'
-
-
-interface Message {
-  id: string;
-  userId: string;
-  username: string;
-  text: string;
-  timestamp: number;
-}
+import "./GlobalChat.css";
+import { type GlobalChatMessage, useGlobalChat } from "../context/GlobalChatContext";
+import { useSocket } from "../socket/useSocket";
 
 interface User {
-  id: string;
+  id: string; // Socket ID
+  userId: string;
   username: string;
   online: boolean;
+  avatarUrl: string | null;
 }
 
 interface GlobalChatProps {
   navigate: (page: PageType, data?: any) => void;
 }
 
-const GlobalChatPage = ({ navigate }: GlobalChatProps) => {
 
-    const { user } = useAuth()
-  const [messages, setMessages] = useState<Message[]>([]);
+const GlobalChatPage = ({ navigate }: GlobalChatProps) => {
+  
+  const { user } = useAuth();
+  const { messages, addMessage } = useGlobalChat();
   const [inputText, setInputText] = useState("");
-  const [userId, setUserId] = useState("");
-  const [isConnected, setIsConnected] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState<User[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const wsRef = useRef<WebSocket | null>(null);
+  
+  const socket = useSocket()
+  
+  const isConnected = true
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -41,111 +38,44 @@ const GlobalChatPage = ({ navigate }: GlobalChatProps) => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
+  
   useEffect(() => {
-    if (user) { connectWebSocket() }
+    socket.emit("join-global-chat", {
+      userId: user!.id || `user_${Date.now()}`,
+      username: user!.username,
+      avatarUrl: user?.perfilImageUrl,
+    });
+
+    // Escuta mensagens recebidas (Chat ou Sistema)
+    socket.on("global-chat-message", (data: GlobalChatMessage) => {
+      addMessage(data);
+    });
+
+    // Escuta atualização da lista de usuários
+    socket.on("global-chat-users-list", (data: { users: User[] }) => {
+      setOnlineUsers(data.users);
+    });
+
     return () => {
-      if (wsRef.current) {
-        wsRef.current.close();
-      }
-    };
-  }, []);
-
-  const connectWebSocket = () => {
-    const newUserId = `user_${Date.now()}_${Math.random()
-      .toString(36)
-      .slice(2, 9)}`;
-    setUserId(newUserId);
-    
-    const ws = new WebSocket("ws://localhost:8081/chat");
-
-    ws.onopen = () => {
-      console.log("WebSocket conectado");
-      setIsConnected(true);
-      // Envia mensagem de entrada do usuário
-      ws.send(
-        JSON.stringify({
-          type: "join",
-          userId: newUserId,
-          username: user!.username,
-          timestamp: Date.now(),
-        })
-      );
-    };
-
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        console.log("Mensagem recebida:", data);
-
-        switch (data.type) {
-          case "message":
-            const newMessage: Message = {
-              id: data.id || `msg_${Date.now()}`,
-              userId: data.userId,
-              username: data.username,
-              text: data.text,
-              timestamp: data.timestamp,
-            };
-            setMessages((prev) => [...prev, newMessage]);
-            break;
-          case "user_joined":
-            const joinMessage: Message = {
-              id: `msg_${Date.now()}`,
-              userId: "system",
-              username: "Sistema",
-              text: `${data.username} entrou no chat!`,
-              timestamp: data.timestamp,
-            };
-            setMessages((prev) => [...prev, joinMessage]);
-            break;
-          case "user_left":
-            const leaveMessage: Message = {
-              id: `msg_${Date.now()}`,
-              userId: "system",
-              username: "Sistema",
-              text: `${data.username} saiu do chat.`,
-              timestamp: data.timestamp,
-            };
-            setMessages((prev) => [...prev, leaveMessage]);
-            break;
-          case "users_list":
-            setOnlineUsers(data.users);
-            break;
-          case "history":
-            setMessages(data.messages);
-            break;
-        }
-      } catch (error) {
-        console.error("Erro ao processar mensagem:", error);
-      }
-    };
-
-    ws.onerror = (error) => {
-      console.error("Erro no WebSocket:", error);
-      setIsConnected(false);
-    };
-
-    ws.onclose = () => {
-      console.log("WebSocket desconectado");
-      setIsConnected(false);
-    };
-
-    wsRef.current = ws;
-  };
+      socket.off("global-chat-message")
+      socket.off("global-chat-users-list")
+    }
+  }, [])
 
   const handleSendMessage = () => {
-    if (!inputText.trim() || !wsRef.current) return;
+    if (!inputText.trim()) return;
 
     const messageData = {
-      type: "message",
       text: inputText,
-      userId,
+      userId: user!.id || "unknown",
       username: user!.username,
       timestamp: Date.now(),
+      avatarUrl: user?.perfilImageUrl
     };
 
-    wsRef.current.send(JSON.stringify(messageData));
+    // Emite o evento para o backend
+    socket.emit("send-global-chat-message", messageData);    
+    
     setInputText("");
   };
 
@@ -166,35 +96,38 @@ const GlobalChatPage = ({ navigate }: GlobalChatProps) => {
 
   return (
     <div className="chatContainer">
-
       {/* Sidebar */}
       <div className="sidebar">
         <div className="sidebarHeader">
           <h2 className="sidebarTitle">
             <Users size={20} style={{ marginRight: "8px" }} />
-            Online Users ({onlineUsers.filter((u) => u.online).length})
+            Online ({onlineUsers.length})
           </h2>
         </div>
 
         <div className="userList">
-          {onlineUsers.map((user) => (
-            <div key={user.id} className="userItem">
-              <div className="userAvatar">
-                {user.username.charAt(0).toUpperCase()}
-              </div>
+          {onlineUsers.map((u) => (
+            <div key={u.id} className="userItem">
+              {u.avatarUrl ? (
+                  <img src={u.avatarUrl} width={32} height={32} style={{borderRadius: 32}} alt="avatar" />                
+              ) : (
+                <div className="userAvatar">
+                  {u.username.charAt(0).toUpperCase()}
+                </div>
+              )}
               <div className="userInfo">
                 <div className="userName">
-                  {user.username}
-                  {user.id === userId && " (you)"}
+                  {u.username}
+                  {u.userId === user?.id && " (você)"}
                 </div>
                 <div className="userStatus">
                   <Circle
                     size={8}
-                    fill={user.online ? "#10B981" : "#9CA3AF"}
-                    color={user.online ? "#10B981" : "#9CA3AF"}
+                    fill={u.online ? "#10B981" : "#9CA3AF"}
+                    color={u.online ? "#10B981" : "#9CA3AF"}
                   />
                   <span className="userStatusText">
-                    {user.online ? "Online" : "Offline"}
+                    {u.online ? "Online" : "Offline"}
                   </span>
                 </div>
               </div>
@@ -208,7 +141,7 @@ const GlobalChatPage = ({ navigate }: GlobalChatProps) => {
         {/* Header */}
         <div className="chatHeader">
           <div>
-            <h1 className="chatTitle">Chat Geral</h1>
+            <h1 className="chatTitle">Chat Global</h1>
             <p className="chatStatus">
               {isConnected ? "Conectado" : "Desconectado"}
             </p>
@@ -228,7 +161,7 @@ const GlobalChatPage = ({ navigate }: GlobalChatProps) => {
         {/* Messages */}
         <div className="messagesContainer">
           {messages.map((msg) => {
-            const isOwnMessage = msg.userId === userId;
+            const isOwnMessage = msg.userId === user?.id; 
             const isSystemMessage = msg.userId === "system";
 
             if (isSystemMessage) {
@@ -240,9 +173,18 @@ const GlobalChatPage = ({ navigate }: GlobalChatProps) => {
             }
 
             return (
-              <div key={msg.id} className={`messageWrapper ${isOwnMessage ? 'messageWrapperOwn': ''}`}>
+              <div
+                key={msg.id}
+                className={`messageWrapper ${
+                  isOwnMessage ? "messageWrapperOwn" : ""
+                }`}
+              >
                 <div className="messageAvatar">
-                  {msg.username.charAt(0).toUpperCase()}
+                  {msg.avatarUrl ? (
+                     <img src={msg.avatarUrl} className="userAvatarImg" alt="" style={{width: 32, height: 32, borderRadius: '50%'}} />
+                  ) : (
+                    msg.username.charAt(0).toUpperCase()
+                  )}
                 </div>
 
                 <div className="messageContent">
@@ -254,7 +196,9 @@ const GlobalChatPage = ({ navigate }: GlobalChatProps) => {
                   </div>
 
                   <div
-                    className={`messageBubble ${isOwnMessage ? "messageBubbleOwn" : "messageBubbleOther"}`}
+                    className={`messageBubble ${
+                      isOwnMessage ? "messageBubbleOwn" : "messageBubbleOther"
+                    }`}
                   >
                     <p className="messageText">{msg.text}</p>
                   </div>
@@ -280,7 +224,9 @@ const GlobalChatPage = ({ navigate }: GlobalChatProps) => {
             <button
               onClick={handleSendMessage}
               disabled={!inputText.trim()}
-              className={`sendButton ${inputText.trim() ? '' : 'sendButtonDisabled'}`}
+              className={`sendButton ${
+                inputText.trim() ? "" : "sendButtonDisabled"
+              }`}
             >
               <Send size={20} />
             </button>
@@ -293,7 +239,6 @@ const GlobalChatPage = ({ navigate }: GlobalChatProps) => {
       </div>
     </div>
   );
-}
-
+};
 
 export default GlobalChatPage;

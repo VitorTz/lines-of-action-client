@@ -5,7 +5,7 @@
   background-color: var(--bg);
 }
 
-/* Sidebar */
+
 .sidebar {
   width: 280px;
   background-color: var(--card-bg);
@@ -220,7 +220,7 @@
   word-break: break-word;
 }
 
-/* Input */
+
 .inputContainer {
   background-color: var(--card-bg);
   border-top: 1px solid var(--border);

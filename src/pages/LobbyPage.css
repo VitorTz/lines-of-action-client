@@ -1,5 +1,5 @@
 
-/* Estilos da página de lobby */
+
 .app-container {
   display: flex;
   justify-content: center;
@@ -452,7 +452,7 @@
   margin: 0;
 }
 
-/* Responsividade */
+
 @media (max-width: 600px) {
   .match-modal-header h2 {
     font-size: 1.5rem;
@@ -486,7 +486,7 @@
   }
 }
 
-/* Estilos do BotsTab */
+
 .player-list {
   list-style: none;
   padding: 0;

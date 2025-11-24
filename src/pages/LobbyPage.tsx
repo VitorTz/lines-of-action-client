@@ -6,6 +6,7 @@ import { useNotification } from "../components/notification/NotificationContext"
 import { useAuth } from "../components/auth/AuthContext";
 import { useLobby } from "../context/LobbyContext";
 import MatchFoundModal from "../components/MatchFountModal";
+import LobbyChat from "../components/LobbyChat";
 import "./LobbyPage.css";
 
 
@@ -89,10 +90,6 @@ const LobbyPage = ({ navigate }: LobbyPageProps) => {
     // Handler: entrou na fila
     socket.on("on-queue", () => {
       setOnQueue(true);
-      addNotification({
-        title: "Procurando adversário...",
-        type: "info",
-      });
     });
 
     // Handler: partida encontrada
@@ -212,10 +209,31 @@ const LobbyPage = ({ navigate }: LobbyPageProps) => {
 
         <main className="lobby-content">
           {activeTab === "players" && (
-            <div >
-              {onQueue && <div className="spinner"></div>}
+            <div className="players-tab-content">
+              
+              {/* Área de Status da Fila */}
+              <div className="queue-status-area">
+                {onQueue ? (
+                  <div className="queue-status">
+                    <div className="spinner"></div>
+                    <h2>Procurando Oponente...</h2>
+                  </div>
+                ) : (
+                  <div className="queue-status">                    
+                    <p className="queue-description">
+                      Entre na fila para ser pareado com jogadores do seu nível.
+                    </p>
+                  </div>
+                )}
+              </div>
+              
+              <div className="lobby-chat-wrapper">
+                <LobbyChat />
+              </div>
+
             </div>            
           )}
+          
           {activeTab === "bots" && <BotsTab navigate={navigate} />}
         </main>
 

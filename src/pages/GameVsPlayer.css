@@ -1,7 +1,8 @@
-/* Layout Principal */
+
+
 .game-layout {
   display: flex;
-  height: calc(100vh - 80px); /* Desconta o Header global */
+  height: calc(100vh - 80px);
   background-color: var(--bg);
   overflow: hidden;
   gap: 1rem;
@@ -10,7 +11,7 @@
   margin: 0 auto;
 }
 
-/* Área Principal (Esquerda) */
+
 .game-main-area {
   flex: 1;
   display: flex;
@@ -23,7 +24,7 @@
   overflow: hidden;
 }
 
-/* Compact Header */
+
 .game-compact-header {
   display: flex;
   align-items: center;
@@ -74,14 +75,14 @@
   border: 1px solid var(--border);
 }
 
-/* Tabuleiro */
+
 .board-container {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  background-color: #f8f9fa; /* Cor neutra de fundo */
+  background-color: #f8f9fa;
   padding: 20px;
 }
 
@@ -103,15 +104,14 @@
   display: flex;
 }
 
-/* Células e Peças */
 .cell {
-  width: 60px; /* Mantido fixo para compatibilidade com a lógica de animação JS */
+  width: 60px;
   height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  border: 2px solid transparent; /* Para highlight de seleção sem mover layout */
+  border: 2px solid transparent;
 }
 
 .piece {
@@ -128,7 +128,7 @@
   height: 16px;
   background-color: rgba(220, 14, 14, 0.5);
   border-radius: 50%;
-  z-index: 1;
+  z-index: 10;
 }
 
 .turn-badge {
@@ -156,7 +156,7 @@
   border: 1px solid var(--border);
 }
 
-/* Sidebar */
+
 .game-sidebar {
   width: 320px;
   display: flex;
@@ -171,7 +171,7 @@
 .video-section {
   padding: 10px;
   background: #fff;
-  min-height: 200px; /* Altura para o vídeo */
+  min-height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -216,9 +216,9 @@
   height: 100%;
 }
 
-/* Ajustes específicos para o GameChat.css se adaptar aqui */
+
 .chat-pane {
-  padding: 0; /* Chat já tem seu padding */
+  padding: 0;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -231,7 +231,7 @@
   border-radius: 0;
 }
 
-/* Estilos de Histórico */
+
 .history-list-compact {
   display: flex;
   flex-direction: column;
@@ -307,7 +307,6 @@
   background: #fee2e2;
 }
 
-/* Modal Game Over */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -336,7 +335,7 @@
   to { transform: scale(1); opacity: 1; }
 }
 
-/* Responsividade */
+
 @media (max-width: 900px) {
   .game-layout {
     flex-direction: column;
@@ -346,7 +345,7 @@
   
   .game-sidebar {
     width: 100%;
-    height: 500px; /* Altura fixa para scroll interno */
+    height: 500px;
   }
   
   .video-section {

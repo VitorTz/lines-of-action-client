@@ -6,15 +6,18 @@ import {
   Info,
   MessageCircle,
   Trophy,
+  Play,
 } from "lucide-react";
 import type { PageType } from "../types/general";
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "./auth/AuthContext";
 import "./Header.css";
 
+
 interface HeaderProps {
   navigate: (page: PageType, data?: any) => void;
 }
+
 
 const Header = ({ navigate }: HeaderProps) => {
   const { user } = useAuth();
@@ -79,8 +82,17 @@ const Header = ({ navigate }: HeaderProps) => {
                   Login
                 </button>
               )}
-              {
-                user &&
+              {user && (
+                <button
+                  onClick={() => {
+                    navigate("lobby");
+                    setHamburgerOpen(false);
+                  }}
+                >
+                  <Play size={18} /> Jogar
+                </button>
+              )}
+              {user && (
                 <button
                   onClick={() => {
                     navigate("global-chat");
@@ -89,9 +101,8 @@ const Header = ({ navigate }: HeaderProps) => {
                 >
                   <MessageCircle size={18} /> Chat Global
                 </button>
-              }
-              {
-                user &&
+              )}
+              {user && (
                 <button
                   onClick={() => {
                     navigate("match-history");
@@ -100,7 +111,7 @@ const Header = ({ navigate }: HeaderProps) => {
                 >
                   <History size={18} /> Histórico de partidas
                 </button>
-              }
+              )}
 
               <button
                 onClick={() => {

@@ -1,16 +1,16 @@
 import type { GameHistory } from "../types/game";
 import { Trophy, X } from "lucide-react";
 
-
 interface GameHistoryComponentProps {
   game: GameHistory;
   onReview?: () => void;
 }
 
-
-const GameHistoryComponent = ({ game, onReview }: GameHistoryComponentProps) => {
-  
-  const isVictory = !!game.winner  
+const GameHistoryComponent = ({
+  game,
+  onReview,
+}: GameHistoryComponentProps) => {
+  const isVictory = !!game.winner;
 
   return (
     <li className="match-item">

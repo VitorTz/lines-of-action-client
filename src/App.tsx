@@ -9,6 +9,8 @@ import { LobbyProvider } from "./context/LobbyContext";
 import { useEffect } from "react";
 import { useSocket } from "./socket/useSocket";
 import { useNotification } from "./components/notification/NotificationContext";
+import { GameChatProvider } from "./context/GameChatContext";
+import { GlobalChatProvider } from "./context/GlobalChatContext";
 
 
 const AppContent = () => {
@@ -49,7 +51,11 @@ const App = () => {
       <SocketProvider>
         <AuthProvider>
           <LobbyProvider>
-            <AppContent />
+            <GlobalChatProvider>
+              <GameChatProvider>
+                <AppContent />
+              </GameChatProvider>
+            </GlobalChatProvider>
           </LobbyProvider>
         </AuthProvider>
       </SocketProvider>

@@ -9,13 +9,14 @@ import {
 import { useState, useEffect, useRef } from "react";
 import { formatTime, generateNewGameBoard } from "../util/util";
 import type { PageType } from "../types/general";
-import "./GameVsPlayer.css"; // Note que agora usamos um CSS específico
 import { useSocket } from "../socket/useSocket";
 import { useAuth } from "../components/auth/AuthContext";
 import { useNotification } from "../components/notification/NotificationContext";
 import VideoChat from "../components/VideoChat";
 import GameChat from "../components/GameChat";
 import { MessageSquare, History, BarChart2, Flag, ChevronLeft } from "lucide-react";
+import { useGameChat } from "../context/GameChatContext";
+import "./GameVsPlayer.css";
 
 const INITIAL_BOARD: Board = generateNewGameBoard();
 
@@ -36,9 +37,9 @@ const GameVsPlayer = ({ navigate, data }: GameVsPlayerProps) => {
   const gameId: string = data.gameId;
   const myColor: string = data.color;
   
-  // Estado da UI (Abas)
   const [activeTab, setActiveTab] = useState<'chat' | 'history' | 'stats'>('chat');
 
+  const { clearMessages } = useGameChat()
   const [opponentName, setOpponentName] = useState<string>("Oponente");
   const [isMyTurn, setIsMyTurn] = useState(myColor === "black");
   const [gameStarted, setGameStarted] = useState(false);
@@ -48,7 +49,7 @@ const GameVsPlayer = ({ navigate, data }: GameVsPlayerProps) => {
   const [validMoves, setValidMoves] = useState<Position[]>([]);
   const [moveHistory, setMoveHistory] = useState<string[]>([]);
   const [gameOver, setGameOver] = useState(false);
-  const [winner, setWinner] = useState<Piece | null>(null);
+  const [winner, setWinner] = useState<string | null>(null);
   const [animatingPiece, setAnimatingPiece] = useState<{
     from: Position;
     to: Position;
@@ -76,6 +77,8 @@ const GameVsPlayer = ({ navigate, data }: GameVsPlayerProps) => {
     if (user) {
       socket.emit("join-game", { gameId, playerId: user.id });
     }
+    
+    clearMessages()
 
     socket.on("game-state", handleGameState);
     socket.on("move-made", handleMoveMade);
@@ -91,6 +94,7 @@ const GameVsPlayer = ({ navigate, data }: GameVsPlayerProps) => {
       socket.off("game-over");
       socket.off("opponent-disconnected-game");
       socket.off("error");
+      clearMessages()
     };
   }, []);
 
@@ -103,7 +107,7 @@ const GameVsPlayer = ({ navigate, data }: GameVsPlayerProps) => {
     }
   }, [startTime, gameOver, gameStarted]);
 
-  // Handlers (mantidos idênticos)
+  
   const handleGameState = (data: any) => {
     setBoard(data.board);
     setCurrentPlayer(data.turn === "black" ? BLACK_PIECE : WHITE_PIECE);
@@ -140,14 +144,14 @@ const GameVsPlayer = ({ navigate, data }: GameVsPlayerProps) => {
     }, 300);
   };
 
-  const handleGameOver = (data: any) => {
+  const handleGameOver = (data: { winnerUsername: string, gameId: string, reason: string }) => {
     setGameOver(true);
-    setWinner(data.winner === "black" ? BLACK_PIECE : WHITE_PIECE);
+    setWinner(data.winnerUsername);
     playWinSound();
     if (data.reason === "surrender") {
       addNotification({
         title: "Jogo Finalizado",
-        message: data.winner === myColor ? "Seu oponente desistiu!" : "Você desistiu da partida",
+        message: data.winnerUsername === user!.username ? "Seu oponente desistiu!" : "Você desistiu da partida",
         type: "info",
       });
     }
@@ -157,7 +161,7 @@ const GameVsPlayer = ({ navigate, data }: GameVsPlayerProps) => {
     addNotification({ title: "Oponente Desconectado", message: "Seu oponente se desconectou da partida", type: "warning" });
   };
 
-  // Lógica de Som e Jogo (mantida idêntica para não quebrar lógica)
+  
   const playLocalSound = (path: string) => {
     const audio = new Audio(path);
     audio.volume = 0.4;
@@ -317,9 +321,9 @@ const GameVsPlayer = ({ navigate, data }: GameVsPlayerProps) => {
           </button>
           
           <div className="match-versus">
-            <span className="player-name">{user?.username} (Você)</span>
+            <span className="player-name">{myColor == 'white' ? 'brancas: ' : 'pretas: '} {user?.username} (Você)</span>
             <span className="versus-text">VS</span>
-            <span className="player-name">{opponentName}</span>
+            <span className="player-name">{myColor == 'white' ? 'pretas: ' : 'brancas: '} {opponentName}</span>
           </div>
 
           <div className="game-timer">
@@ -459,7 +463,7 @@ const GameVsPlayer = ({ navigate, data }: GameVsPlayerProps) => {
           )}
         </div>
 
-        {/* Botão de Desistir (Rodapé da Sidebar) */}
+        {/* Botão de Desistir */}
         <div className="sidebar-footer">
           <button className="surrender-btn" onClick={handleSurrender}>
             <Flag size={16} /> Desistir
@@ -472,11 +476,9 @@ const GameVsPlayer = ({ navigate, data }: GameVsPlayerProps) => {
         <div className="modal-overlay">
           <div className="game-over-card">
             <h2>Fim de Jogo!</h2>
-            <p>
-              Vencedor: {winner === myPiece ? "Você venceu!" : "Oponente venceu"}
-            </p>
+            <p>Vencedor: {winner}{winner === user!.username ? ' (Você)' : ''} </p>
             <div className="modal-actions">
-              <button className="btn-primary" onClick={exitGame}>Voltar ao Lobby</button>
+              <button style={{border: 'none', borderRadius: 8}} className="btn-primary" onClick={exitGame}>Voltar ao Lobby</button>
             </div>
           </div>
         </div>

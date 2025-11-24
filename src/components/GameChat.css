@@ -5,7 +5,7 @@
   border-radius: 8px;
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
-  height: 300px; /* Altura fixa para caber na sidebar */
+  height: 300px;
   overflow: hidden;
   margin-top: 20px;
 }

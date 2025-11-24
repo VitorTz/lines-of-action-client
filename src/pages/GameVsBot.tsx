@@ -439,9 +439,9 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
         </div>
       </div>
 
-      <div className="game-container">
+      <div className="game-container" >
 
-          <div className="board-wrapper">
+          <div className="board-wrapper" style={{backgroundColor: 'white'}}>
           <div className="column-labels">
             {columns.map((col, idx) => (
               <div key={idx} className="label">

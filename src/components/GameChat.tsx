@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
-import { useSocket } from '../socket/useSocket';
-import { Send, MessageSquare } from 'lucide-react';
-import './GameChat.css';
+import { useState, useEffect, useRef } from "react";
+import { useSocket } from "../socket/useSocket";
+import { Send, MessageSquare } from "lucide-react";
+import "./GameChat.css";
+import { useGameChat } from "../context/GameChatContext";
 
 interface GameChatProps {
   gameId: string;
@@ -16,39 +17,34 @@ interface ChatMessage {
 
 const GameChat = ({ gameId, playerId }: GameChatProps) => {
   const socket = useSocket();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const { messages, addMessage } = useGameChat();
   const [inputText, setInputText] = useState("");
-  
-  // Mudança 1: Referência para o container das mensagens, não para um elemento vazio no fim
+
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     if (messagesContainerRef.current) {
-      // Mudança 2: Manipular o scrollTop diretamente. Isso não causa rolagem na página pai.
       const { scrollHeight, clientHeight } = messagesContainerRef.current;
       messagesContainerRef.current.scrollTop = scrollHeight - clientHeight;
     }
   };
 
-  // Rolar quando as mensagens mudam
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  // Rolar quando o componente monta (ex: ao trocar de aba)
   useEffect(() => {
-    // Pequeno timeout para garantir que o layout renderizou antes de rolar
     const timer = setTimeout(scrollToBottom, 50);
     return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
-    socket.on('game-chat-message', (msg: ChatMessage) => {
-      setMessages((prev) => [...prev, msg]);
+    socket.on("game-chat-message", (msg: ChatMessage) => {
+      addMessage(msg);
     });
 
     return () => {
-      socket.off('game-chat-message');
+      socket.off("game-chat-message");
     };
   }, [socket]);
 
@@ -56,10 +52,10 @@ const GameChat = ({ gameId, playerId }: GameChatProps) => {
     e?.preventDefault();
     if (!inputText.trim()) return;
 
-    socket.emit('send-game-message', {
+    socket.emit("send-game-message", {
       gameId,
       playerId,
-      message: inputText
+      message: inputText,
     });
 
     setInputText("");
@@ -72,7 +68,6 @@ const GameChat = ({ gameId, playerId }: GameChatProps) => {
         <span>Chat da Partida</span>
       </div>
 
-      {/* Mudança 3: Adicionar a ref aqui no container com scroll */}
       <div className="game-chat-messages" ref={messagesContainerRef}>
         {messages.length === 0 && (
           <div className="empty-chat">Envie uma mensagem...</div>
@@ -80,12 +75,16 @@ const GameChat = ({ gameId, playerId }: GameChatProps) => {
         {messages.map((msg, idx) => {
           const isMe = msg.senderId === playerId;
           return (
-            <div key={idx} className={`chat-bubble-wrapper ${isMe ? 'me' : 'opponent'}`}>
-              <div className="chat-bubble">
-                {msg.text}
-              </div>
+            <div
+              key={idx}
+              className={`chat-bubble-wrapper ${isMe ? "me" : "opponent"}`}
+            >
+              <div className="chat-bubble">{msg.text}</div>
               <span className="chat-time">
-                {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                {new Date(msg.timestamp).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </span>
             </div>
           );

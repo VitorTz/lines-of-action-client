@@ -4,7 +4,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem; /* Mais padding para a página de texto */
+  padding: 1.5rem;
   box-sizing: border-box;
 }
 
@@ -18,7 +18,7 @@
   border: 1px solid var(--border);
 }
 
-/* Header (Reutilizado do Lobby) */
+
 .about-header {
   padding: 1.25rem;
   border-bottom: 1px solid var(--border);
@@ -37,10 +37,10 @@
   margin: 0.25rem 0 0 0;
 }
 
-/* 4. Estilos Específicos da Página "Sobre" */
+
 
 .about-content {
-  padding: 2rem; /* Mais padding interno */
+  padding: 2rem;
   max-height: 70vh;
   overflow-y: auto;
 }
@@ -50,7 +50,7 @@
 }
 
 .about-section h2 {
-  font-size: 1.25rem; /* text-xl */
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--primary);
   border-bottom: 2px solid var(--border);
@@ -64,27 +64,27 @@
   color: var(--text);
 }
 
-/* Lista de Regras Estilizada */
+
 .rules-list {
   list-style: none;
   padding-left: 0;
   margin: 0;
-  counter-reset: rules-counter; /* Inicia o contador */
+  counter-reset: rules-counter;
 }
 
 .rules-list li {
   position: relative;
-  padding-left: 3.5rem; /* Espaço para o número */
+  padding-left: 3.5rem;
   margin-bottom: 1.25rem;
-  min-height: 2.5rem; /* Garante altura mínima */
+  min-height: 2.5rem;
   display: flex;
   align-items: center;
 }
 
-/* Estilo do número da regra */
+
 .rules-list li::before {
-  counter-increment: rules-counter; /* Incrementa o contador */
-  content: counter(rules-counter); /* Exibe o contador */
+  counter-increment: rules-counter;
+  content: counter(rules-counter);
 
   position: absolute;
   left: 0;
@@ -103,7 +103,7 @@
   justify-content: center;
 }
 
-/* Rodapé (Reutilizado do Lobby) */
+
 .about-footer {
   padding: 1rem;
   border-top: 1px solid var(--border);
