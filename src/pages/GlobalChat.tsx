@@ -46,7 +46,7 @@ const GlobalChatPage = ({ navigate }: GlobalChatProps) => {
       avatarUrl: user?.perfilImageUrl,
     });
 
-    // Escuta mensagens recebidas (Chat ou Sistema)
+    // Escuta mensagens recebidas
     socket.on("global-chat-message", (data: GlobalChatMessage) => {
       addMessage(data);
     });

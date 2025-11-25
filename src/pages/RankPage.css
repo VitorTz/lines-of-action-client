@@ -1,82 +1,247 @@
-
+.metrics-page {
+  background-color: var(--bg);
+  min-height: 100vh;
+  padding: 20px;
+}
 
 .metrics-container {
-  padding: 32px;
-  max-width: 800px;
-  margin: auto;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 24px;
 }
 
 .title {
-  font-size: 28px;
-  font-weight: bold;
+  font-size: 2rem;
+  font-weight: 800;
   color: var(--text);
-  margin-bottom: 20px;
+  margin: 0;
 }
 
+.subtitle {
+  color: var(--text-light);
+  margin-top: 4px;
+}
+
+/* --- Filtros --- */
 .filters-card {
   background: var(--card-bg);
   padding: 20px;
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-sm);
-  margin-bottom: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 32px;
   border: 1px solid var(--border);
 }
 
-.filter-row {
+.filters-header {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 12px;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.filter-row label {
-  color: var(--text);
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filter-group label {
+  font-size: 0.85rem;
   font-weight: 500;
+  color: var(--text-light);
 }
 
-.filter-row input,
-.filter-row select {
-  padding: 6px 10px;
+.filter-group select,
+.filter-group input {
+  padding: 10px;
   border: 1px solid var(--border);
-  border-radius: var(--border-radius);
-  background: var(--light);
+  border-radius: 8px;
+  background: var(--bg);
   color: var(--text);
+  font-size: 0.9rem;
+  transition: border-color 0.2s;
+}
+
+.filter-group select:focus,
+.filter-group input:focus {
+  outline: none;
+  border-color: var(--primary);
 }
 
 .apply-btn {
   width: 100%;
-  padding: 10px;
+  margin-top: 20px;
+  padding: 12px;
   background: var(--primary);
   color: white;
   border: none;
-  border-radius: var(--border-radius);
+  border-radius: 8px;
+  font-weight: 600;
   cursor: pointer;
-  margin-top: 10px;
+  transition: background 0.2s;
 }
 
-.list-card {
+.apply-btn:hover {
+  filter: brightness(1.1);
+}
+
+.apply-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* --- Lista de Cards --- */
+.rank-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rank-card {
+  display: flex;
+  align-items: center;
   background: var(--card-bg);
   border: 1px solid var(--border);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-sm);
-  padding: 12px;
+  border-radius: 12px;
+  padding: 20px;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.user-item {
-  padding: 12px;
-  border-bottom: 1px solid var(--border);
+.rank-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+  border-color: var(--primary);
 }
 
-.user-item:last-child {
-  border-bottom: none;
+.rank-position {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--text-light);
+  opacity: 0.3;
+  width: 60px;
+  text-align: center;
 }
 
-.user-name {
-  font-size: 18px;
-  font-weight: 600;
+.user-avatar-container {
+  margin-right: 20px;
+}
+
+.user-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border);
+}
+
+.user-avatar-placeholder {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.user-main-info {
+  flex: 1;
+}
+
+.user-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.username {
+  font-size: 1.2rem;
+  font-weight: 700;
   color: var(--text);
 }
 
-.user-meta {
-  font-size: 14px;
+.rank-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 193, 7, 0.15); /* Cor dourada suave */
+  color: #d97706;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.user-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 8px 20px;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   color: var(--text-light);
+  font-size: 0.85rem;
+}
+
+.detail-item svg {
+  color: var(--text-light); /* ou var(--primary) para mais destaque */
+  opacity: 0.7;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+  .rank-card {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+  
+  .rank-position {
+    width: 100%;
+    margin-bottom: 0;
+    font-size: 1.2rem;
+  }
+  
+  .user-avatar-container {
+    margin-right: 0;
+  }
+  
+  .user-header {
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .user-details-grid {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
 }
