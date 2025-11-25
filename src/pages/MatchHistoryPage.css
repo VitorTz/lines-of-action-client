@@ -183,6 +183,38 @@
   animation: underline 0.25s ease-out;
 }
 
+.list-header-labels {
+  display: grid;
+  grid-template-columns: 80px 2fr 1.5fr auto;
+  gap: 16px;
+  padding: 10px 24px;
+  background-color: var(--light);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-light);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.loading-spinner {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+.empty-state {
+  padding: 40px;
+  text-align: center;
+  color: var(--text-light);
+}
+
+@media (max-width: 768px) {
+  .list-header-labels {
+    display: none; /* Esconde cabeçalho em mobile pois vira card */
+  }
+}
+
 @keyframes underline {
   from { width: 0; }
   to { width: 100%; }

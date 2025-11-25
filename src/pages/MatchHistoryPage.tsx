@@ -3,7 +3,7 @@ import type { PageType } from '../types/general';
 import './MatchHistoryPage.css';
 import { linesApi } from '../api/linesApi';
 import type { GameHistory } from '../types/game';
-import GameHistoryComponent from '../components/GameHistory';
+import { GameHistoryItem } from '../components/GameHistoryItem'; // IMPORT NOVO
 
 interface MatchHistoryPageProps {
   navigate: (page: PageType, data?: any) => void;
@@ -53,7 +53,8 @@ const MatchHistoryPage = ({ navigate }: MatchHistoryPageProps) => {
   }, [globalOffset, hasMoreGlobal]);
 
   useEffect(() => {
-    loadPlayerHistory();
+    // Carrega inicial
+    if (playerGames.length === 0) loadPlayerHistory();
   }, []);
 
   useEffect(() => {
@@ -65,22 +66,25 @@ const MatchHistoryPage = ({ navigate }: MatchHistoryPageProps) => {
   const handleScroll = () => {
     const el = containerRef.current;
     if (!el || loading) return;
-
-    const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 20;
-
+    const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 50; // Aumentei margem para 50px
     if (atBottom) {
       if (activeTab === "player") loadPlayerHistory();
       else loadGlobalHistory();
     }
   };
 
-  const renderGames = (list: GameHistory[]) => (
+  // Função helper para renderizar a lista
+  const renderGames = (list: GameHistory[], mode: "player" | "global") => (
     <ul className="match-list fade-in">
-      {list.map((g, idx) => (
-        <GameHistoryComponent
-          key={idx}
+      {list.length === 0 && !loading && (
+          <div className="empty-state">Nenhuma partida encontrada.</div>
+      )}
+      
+      {list.map((g) => (
+        <GameHistoryItem
+          key={g.gameId}
           game={g}
-          onReview={() => navigate("game-review", g.gameId)}
+          onReview={() => navigate("game-review", g.gameId )}
         />
       ))}
     </ul>
@@ -91,34 +95,41 @@ const MatchHistoryPage = ({ navigate }: MatchHistoryPageProps) => {
       <div className="history-card">
 
         <header className="history-header">
-          <h1>Histórico de partidas</h1>
-
+          <h1>Histórico de Partidas</h1>
           <div className="tabs">
             <button
               className={`tab-btn-min ${activeTab === "player" ? "active" : ""}`}
               onClick={() => setActiveTab("player")}
             >
-              Meu Histórico
+              Minhas Partidas
             </button>
 
             <button
               className={`tab-btn-min ${activeTab === "global" ? "active" : ""}`}
               onClick={() => setActiveTab("global")}
             >
-              Global
+              Partidas Globais
             </button>
           </div>
         </header>
+
+        {/* Header da Tabela (Opcional, mas ajuda na leitura em Desktop) */}
+        <div className="list-header-labels">
+            <span>Status</span>
+            <span>Jogadores</span>
+            <span>Detalhes</span>
+            <span>Ação</span>
+        </div>
 
         <main
           className="history-content"
           ref={containerRef}
           onScroll={handleScroll}
         >
-          {activeTab === "player" && renderGames(playerGames)}
-          {activeTab === "global" && renderGames(globalGames)}
+          {activeTab === "player" && renderGames(playerGames, "player")}
+          {activeTab === "global" && renderGames(globalGames, "global")}
 
-          {loading && <p className="loading">Loading...</p>}
+          {loading && <div className="loading-spinner">Carregando mais partidas...</div>}
         </main>
 
       </div>
