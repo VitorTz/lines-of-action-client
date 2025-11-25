@@ -144,7 +144,7 @@ const Router = () => {
       case "project-description":
         return <ProjectDescriptionPage navigate={navigate} />
       case "about":
-        return <AboutPage />
+        return <AboutPage navigate={navigate} />
       case 'match-history':
         return <MatchHistoryPage navigate={navigate} />
       case 'game-bot':

@@ -4,7 +4,7 @@ import type { Board, Move } from "../types/game";
 
 export class EasyBot extends BotPlayer {
     
-    selectMove(_board: Board, allMoves: Move[]): Move {
+    selectMove(board: Board, allMoves: Move[]): Move {
         return allMoves[Math.floor(Math.random() * allMoves.length)];
     }
 
