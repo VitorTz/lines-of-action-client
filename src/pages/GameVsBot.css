@@ -148,6 +148,7 @@
   border-radius: 50%;
   background-color: #dc0e0e;
   opacity: 0.6;
+  z-index: 10;
 }
 
 .sidebar {
