@@ -7,8 +7,7 @@ export function setupHeartbeat(socket: Socket) {
   const WATCHDOG_TIMEOUT = 15000;
 
   const interval = setInterval(() => {
-    socket.emit("heartbeat");
-    // console.log("[SOCKET PING]");
+    socket.emit("heartbeat");    
     
     if (Date.now() - lastPong > WATCHDOG_TIMEOUT) {
       console.warn("Heartbeat timeout. Forcing reconnect...");
@@ -18,7 +17,6 @@ export function setupHeartbeat(socket: Socket) {
   }, HEARTBEAT_INTERVAL);
 
   socket.on("heartbeat-ack", () => {
-    // console.log("[SOCKET PONG]");
     lastPong = Date.now();
   });
 

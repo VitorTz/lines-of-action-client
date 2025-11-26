@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { PageType } from "../types/general";
 import { useAuth } from "../components/auth/AuthContext";
 import VideoChat from "../components/VideoChat";
@@ -13,6 +13,7 @@ import {
   EMPTY_CELL 
 } from "../types/game";
 import "./GameVsPlayer.css";
+import { useSocket } from "../socket/useSocket";
 
 const isLightSquare = (row: number, col: number) => (row + col) % 2 === 0;
 
@@ -28,26 +29,25 @@ const GameVsPlayer = ({ navigate, data }: GameVsPlayerProps) => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'chat' | 'history' | 'stats'>('chat');
   
-  const { gameState, actions } = useMultiplayerGame(data.gameId, data.color, navigate);
+  const { gameState, actions } = useMultiplayerGame(data.gameId, data.color, navigate);  
 
   const {
     board, 
     isMyTurn, 
     opponentName, 
-    winner, 
-    gameOver, 
-    selectedPiece, 
-    validMoves, 
-    animatingPiece, 
-    lastMove, 
-    stats, 
+    winner,
+    gameOver,
+    selectedPiece,
+    validMoves,
+    animatingPiece,
+    lastMove,
+    stats,
     currentPlayer
   } = gameState;
   
   const myPiece = data.color === "black" ? BLACK_PIECE : WHITE_PIECE;
   
-  const isCellValid = (row: number, col: number) => 
-    validMoves.some((m) => m.row === row && m.col === col);
+  const isCellValid = (row: number, col: number) =>  validMoves.some((m) => m.row === row && m.col === col);
 
   const isLastMoveSquare = (row: number, col: number) => {
     if (!lastMove) return false;
@@ -60,7 +60,6 @@ const GameVsPlayer = ({ navigate, data }: GameVsPlayerProps) => {
   };
 
   const getPieceStyle = (row: number, col: number) => {
-    // Se esta é a peça de origem da animação, aplica a translação
     if (animatingPiece && animatingPiece.from.row === row && animatingPiece.from.col === col) {
       const deltaRow = animatingPiece.to.row - animatingPiece.from.row;
       const deltaCol = animatingPiece.to.col - animatingPiece.from.col;
@@ -74,7 +73,6 @@ const GameVsPlayer = ({ navigate, data }: GameVsPlayerProps) => {
   };
 
   const getPieceAtPosition = (row: number, col: number): Piece => {
-    // Se for a célula de origem, retornamos a peça que está sendo animada
     if (animatingPiece && animatingPiece.from.row === row && animatingPiece.from.col === col) {
         return animatingPiece.piece;
     }
@@ -82,8 +80,6 @@ const GameVsPlayer = ({ navigate, data }: GameVsPlayerProps) => {
   };
 
   const shouldShowPiece = (row: number, col: number) => {
-    // CORREÇÃO: Sempre mostrar a peça se ela existe no board OU se é a peça sendo animada (na posição de origem)
-    // O CSS Translate vai cuidar de movê-la visualmente.
     if (animatingPiece && animatingPiece.from.row === row && animatingPiece.from.col === col) {
         return true; 
     }
@@ -96,9 +92,6 @@ const GameVsPlayer = ({ navigate, data }: GameVsPlayerProps) => {
       <div className="game-main-area">
         {/* Header */}
         <div className="game-compact-header">
-          <button className="back-btn" onClick={actions.exitGame}>
-            <ChevronLeft size={20}/>
-          </button>
           
           <div className="match-versus">
             <span className="player-name">

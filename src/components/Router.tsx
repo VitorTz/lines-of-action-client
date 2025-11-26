@@ -15,36 +15,54 @@ import GlobalChatPage from "../pages/GlobalChat";
 import RankPage from "../pages/RankPage";
 import GameVsPlayer from "../pages/GameVsPlayer";
 import GameReview from "../pages/GameReview";
-
+import { useGlobal } from "../context/GlobalContext";
+import { useSocket } from "../socket/useSocket";
 
 const Router = () => {
-
-  const { user } = useAuth()
+  const { user } = useAuth();
   const [currentPage, setCurrentPage] = useState<PageType>("lobby");
   const [pageData, setPageData] = useState<any>(null);
+  
+  // Novos estados para controlar o Modal de Saída
+  const { isPlaying, setIsPlaying, gameId, setGameId } = useGlobal();
+  const [showExitModal, setShowExitModal] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState<{
+    page: PageType;
+    data: any;
+  } | null>(null);
 
-  const pageFromHash = (hash: string): {page: PageType, data?: any} => {
+  const socket = useSocket();
+
+  const handleExitGame = () => {
+    if (isPlaying && user) {
+      socket.emit("surrender", { gameId, playerId: user.id });
+      setGameId(null);
+      setIsPlaying(false);
+    }
+  };
+
+  const pageFromHash = (hash: string): { page: PageType; data?: any } => {
     if (!hash) return { page: "home" as PageType, data: null };
     const clean: string | PageType = hash.replace(/^#/, "");
 
     if (clean.startsWith("game-bot")) {
-      const difficulty =  clean.split("-")[2]
-      return { page: 'game-bot', data: difficulty }
+      const difficulty = clean.split("-")[2];
+      return { page: "game-bot", data: difficulty };
     } else if (clean.startsWith("game-player")) {
-      const t = clean.split("-")
-      return { page: 'game-player', data: {gameId: t[2], color: t[3]} }
+      const t = clean.split("-");
+      return { page: "game-player", data: { gameId: t[2], color: t[3] } };
     } else if (clean.startsWith("game-review")) {
-      const gameId = clean.split("-")[2]
-      return { page: 'game-review', data: gameId }
+      const gameId = clean.split("-")[2];
+      return { page: "game-review", data: gameId };
     }
 
     if (clean === "account") return { page: "account", data: null };
     if (clean === "login") return { page: "login", data: null };
     if (clean === "signup") return { page: "signup", data: null };
     if (clean === "match-history") return { page: "match-history", data: null };
-    if (clean === "about") return { page: "about", data: null}
-    if (clean === "global-chat") return { page: "global-chat", data: null }
-    if (clean == "rank") return { page: "rank", data: null }
+    if (clean === "about") return { page: "about", data: null };
+    if (clean === "global-chat") return { page: "global-chat", data: null };
+    if (clean == "rank") return { page: "rank", data: null };
     return { page: "lobby", data: null };
   };
 
@@ -64,6 +82,8 @@ const Router = () => {
     );
 
     const handlePop = (e: PopStateEvent) => {
+      // Nota: Interceptar o botão "Voltar" do navegador é complexo.
+      // Aqui focamos na navegação interna via função 'navigate'.
       if (e.state && e.state.page) {
         setCurrentPage(e.state.page);
         setPageData(e.state.data ?? null);
@@ -95,22 +115,22 @@ const Router = () => {
     };
   }, []);
 
-  const navigate = (page: PageType, data: any = null) => {
+  // Separei a lógica de mudar a URL/Estado para poder reutilizá-la
+  const performNavigation = (page: PageType, data: any) => {
     setCurrentPage(page);
     setPageData(data);
     window.scrollTo(0, 0);
-    
+
     let hash = `#${page}`;
 
-    if (page === 'game-bot') {
+    if (page === "game-bot") {
       hash = `#game-bot-${data}`;
-    }
-    else if (page === 'game-player') {
+    } else if (page === "game-player") {
       hash = `#game-player-${data.gameId}-${data.color}`;
-    } else if (page === 'game-review') {
+    } else if (page === "game-review") {
       hash = `#game-review-${data}`;
     }
-    
+
     window.history.pushState(
       { page, data },
       "",
@@ -118,23 +138,54 @@ const Router = () => {
     );
   };
 
-  
+  // Função navigate modificada para interceptar se estiver jogando
+  const navigate = (page: PageType, data: any = null) => {
+    // Se o usuário tenta navegar para a mesma página, ignora
+    if (page === currentPage) return;
+
+    if (isPlaying) {
+      setPendingNavigation({ page, data });
+      setShowExitModal(true);
+    } else {
+      performNavigation(page, data);
+    }
+  };
+
+  const handleConfirmExit = () => {
+    handleExitGame(); // Executa a rendição
+    setShowExitModal(false); // Fecha o modal
+    
+    // Prossegue para a página que o usuário queria ir
+    if (pendingNavigation) {
+      performNavigation(pendingNavigation.page, pendingNavigation.data);
+      setPendingNavigation(null);
+    }
+  };
+
+  const handleCancelExit = () => {
+    setShowExitModal(false);
+    setPendingNavigation(null);
+  };
+
   const renderPage = () => {
-    if (!user && ![
-        "signup", 
-        "login", 
-        "project-description", 
+    if (
+      !user &&
+      ![
+        "signup",
+        "login",
+        "project-description",
         "about",
         "rank",
-        "game-review"
-      ].includes(currentPage)) {
-      return <LoginPage navigate={navigate} /> 
+        "game-review",
+      ].includes(currentPage)
+    ) {
+      return <LoginPage navigate={navigate} />;
     }
     switch (currentPage) {
       case "account":
         return <AccountPage navigate={navigate} />;
       case "global-chat":
-        return <GlobalChatPage navigate={navigate} />
+        return <GlobalChatPage navigate={navigate} />;
       case "lobby":
         return <LobbyPage navigate={navigate} />;
       case "login":
@@ -142,19 +193,19 @@ const Router = () => {
       case "signup":
         return <SignupPage navigate={navigate} />;
       case "project-description":
-        return <ProjectDescriptionPage navigate={navigate} />
+        return <ProjectDescriptionPage navigate={navigate} />;
       case "about":
-        return <AboutPage navigate={navigate} />
-      case 'match-history':
-        return <MatchHistoryPage navigate={navigate} />
-      case 'game-bot':
-        return <GameVsBot navigate={navigate} difficulty={pageData} />
+        return <AboutPage navigate={navigate} />;
+      case "match-history":
+        return <MatchHistoryPage navigate={navigate} />;
+      case "game-bot":
+        return <GameVsBot navigate={navigate} difficulty={pageData} />;
       case "game-player":
-        return <GameVsPlayer navigate={navigate} data={pageData} />
-      case 'rank':
-        return <RankPage navigate={navigate}/>
-      case 'game-review':
-        return <GameReview navigate={navigate} gameId={pageData} />
+        return <GameVsPlayer navigate={navigate} data={pageData} />;
+      case "rank":
+        return <RankPage navigate={navigate} />;
+      case "game-review":
+        return <GameReview navigate={navigate} gameId={pageData} />;
       default:
         return <LobbyPage navigate={navigate} />;
     }
@@ -165,6 +216,88 @@ const Router = () => {
       <Header navigate={navigate} />
       <main className="main-content">{renderPage()}</main>
       <Footer />
+
+      {/* MODAL DE CONFIRMAÇÃO DE SAÍDA */}
+      {showExitModal && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(43, 33, 24, 0.6)", // --dark com opacidade
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "var(--card-bg)",
+              padding: "2rem",
+              borderRadius: "var(--border-radius)",
+              boxShadow: "var(--shadow-lg)",
+              maxWidth: "400px",
+              width: "90%",
+              textAlign: "center",
+              border: "1px solid var(--border)",
+            }}
+          >
+            <h3
+              style={{
+                color: "var(--primary)",
+                marginTop: 0,
+                fontSize: "1.5rem",
+              }}
+            >
+              Partida em Andamento
+            </h3>
+            <p style={{ color: "var(--text)", marginBottom: "1.5rem" }}>
+              Você está atualmente em uma partida. Se sair agora, você
+              automaticamente <strong>abandonará o jogo</strong> (desistência).
+            </p>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                gap: "1rem",
+              }}
+            >
+              <button
+                onClick={handleCancelExit}
+                style={{
+                  backgroundColor: "transparent",
+                  color: "var(--text-light)",
+                  border: "1px solid var(--border)",
+                  padding: "0.75rem 1.5rem",
+                  borderRadius: "var(--border-radius)",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleConfirmExit}
+                style={{
+                  backgroundColor: "var(--primary)",
+                  color: "#FFFFFF",
+                  border: "none",
+                  padding: "0.75rem 1.5rem",
+                  borderRadius: "var(--border-radius)",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                  boxShadow: "var(--shadow-sm)",
+                }}
+              >
+                Abandonar e Sair
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

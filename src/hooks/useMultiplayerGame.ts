@@ -15,8 +15,11 @@ import { useGameSounds } from "./useGameSounds";
 import { generateNewGameBoard } from "../util/util";
 import { GameModel } from "../model/GameModel";
 import type { PageType } from "../types/general";
+import { useGlobal } from "../context/GlobalContext";
+
 
 const INITIAL_BOARD = generateNewGameBoard();
+
 
 export const useMultiplayerGame = (
   gameId: string, 
@@ -26,6 +29,7 @@ export const useMultiplayerGame = (
   
   const socket = useSocket();
   const { user } = useAuth();
+  const { setIsPlaying, setGameId } = useGlobal()
   const { addNotification } = useNotification();
   const { clearMessages } = useGameChat();
   const { playMove, playCapture, playWin } = useGameSounds();
@@ -53,7 +57,7 @@ export const useMultiplayerGame = (
   const startTimeRef = useRef<number>(Date.now());
 
   const myPiece = myColor === "black" ? BLACK_PIECE : WHITE_PIECE;
-  
+
   // Timer
   useEffect(() => {
     if (!gameOver && gameStarted) {
@@ -63,13 +67,13 @@ export const useMultiplayerGame = (
       return () => clearInterval(timer);
     }
   }, [gameOver, gameStarted]);
-
-  // Socket Logic
+  
   useEffect(() => {
     if (user) {
       socket.emit("join-game", { gameId, playerId: user.id });
     }
-    
+    setIsPlaying(true)
+    setGameId(gameId)
     clearMessages();
 
     const handleGameState = (data: any) => {
@@ -83,8 +87,7 @@ export const useMultiplayerGame = (
 
     const handleMoveMade = (data: any) => {
       const { from, to, captured, player, board: newBoard, turn } = data;
-      
-      // FIX: Derivar a peça do jogador que moveu, para evitar erro de closure com state 'board' antigo
+            
       const pieceMoving = player === 'black' ? BLACK_PIECE : WHITE_PIECE;
       
       // 1. Inicia animação
@@ -117,38 +120,40 @@ export const useMultiplayerGame = (
       setGameOver(true);
       setWinner(data.winnerUsername);
       playWin();
+      setIsPlaying(false)
+      setGameId(null)
       if (data.reason === "surrender") {
         addNotification({
-          title: "Jogo Finalizado",
-          message: data.winnerUsername === user?.username ? "Seu oponente desistiu!" : "Você desistiu da partida",
+          title: "Jogo Finalizado por desistência",
+          message: `Vencedor: ${data.winnerUsername}`,
           type: "info",
         });
       }
     };
 
     const handleOpponentDisconnected = () => {
-      addNotification({ title: "Oponente Desconectado", message: "Seu oponente se desconectou da partida", type: "warning" });
+      setIsPlaying(false)
+      setGameId(null)
+      addNotification({ 
+        title: "Oponente Desconectado", 
+        message: "Seu oponente se desconectou da partida", 
+        type: "warning" 
+      });
     };
-
-    const handleError = (data: any) => {
-        addNotification({ title: "Erro", message: data.message, type: "error" });
-    }
 
     socket.on("game-state", handleGameState);
     socket.on("move-made", handleMoveMade);
     socket.on("game-over", handleGameOverEvent);
     socket.on("opponent-disconnected-game", handleOpponentDisconnected);
-    socket.on("error", handleError);
 
     return () => {
       socket.off("game-state");
       socket.off("move-made");
       socket.off("game-over");
-      socket.off("opponent-disconnected-game");
-      socket.off("error");
+      socket.off("opponent-disconnected-game");      
       clearMessages();
     };
-  }, [gameId, user, myColor, socket]); // Removi 'board' das dependências para evitar re-binds constantes
+  }, [gameId, user, myColor, socket]);
 
   const handleCellClick = useCallback((row: number, col: number) => {
     if (gameOver || !isMyTurn || animatingPiece) return;
@@ -164,7 +169,6 @@ export const useMultiplayerGame = (
             to: { row, col }, 
             captured 
         });
-        // Limpa seleção imediatamente para UX rápida
         setSelectedPiece(null);
         setValidMoves([]);
       } else {
@@ -188,7 +192,12 @@ export const useMultiplayerGame = (
     }
   }, [user, gameId, socket]);
 
-  const exitGame = useCallback(() => navigate("lobby"), [navigate]);
+  const exitGame = useCallback(
+    () => {
+      if (!gameOver) { socket.emit("surrender", { gameId, playerId: user.id }); }
+      navigate("lobby")
+    }, [navigate]
+  );
   
   // Nova Action para Replay
   const viewReplay = useCallback(() => navigate("game-review", gameId), [navigate, gameId]);
@@ -217,7 +226,7 @@ export const useMultiplayerGame = (
       handleCellClick,
       handleSurrender,
       exitGame,
-      viewReplay // Exportado aqui
+      viewReplay
     }
   };
 };

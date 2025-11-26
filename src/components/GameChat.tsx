@@ -16,6 +16,9 @@ interface ChatMessage {
 }
 
 const GameChat = ({ gameId, playerId }: GameChatProps) => {
+
+  console.log("gameChat", gameId, playerId)
+
   const socket = useSocket();
   const { messages, addMessage } = useGameChat();
   const [inputText, setInputText] = useState("");
@@ -53,8 +56,8 @@ const GameChat = ({ gameId, playerId }: GameChatProps) => {
     if (!inputText.trim()) return;
 
     socket.emit("send-game-message", {
-      gameId,
-      playerId,
+      gameId: gameId,
+      playerId: playerId,
       message: inputText,
     });
 

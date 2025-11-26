@@ -11,6 +11,7 @@ import { useSocket } from "./socket/useSocket";
 import { useNotification } from "./components/notification/NotificationContext";
 import { GameChatProvider } from "./context/GameChatContext";
 import { GlobalChatProvider } from "./context/GlobalChatContext";
+import { GlobalProvider } from "./context/GlobalContext";
 
 
 const AppContent = () => {
@@ -47,19 +48,21 @@ const AppContent = () => {
 
 const App = () => {
   return (
-    <NotificationProvider>
-      <SocketProvider>
-        <AuthProvider>
-          <LobbyProvider>
-            <GlobalChatProvider>
-              <GameChatProvider>
-                <AppContent />
-              </GameChatProvider>
-            </GlobalChatProvider>
-          </LobbyProvider>
-        </AuthProvider>
-      </SocketProvider>
-    </NotificationProvider>
+    <GlobalProvider>
+      <NotificationProvider>
+        <SocketProvider>
+          <AuthProvider>
+            <LobbyProvider>
+              <GlobalChatProvider>
+                <GameChatProvider>
+                  <AppContent />
+                </GameChatProvider>
+              </GlobalChatProvider>
+            </LobbyProvider>
+          </AuthProvider>
+        </SocketProvider>
+      </NotificationProvider>
+    </GlobalProvider>
   );
 };
 

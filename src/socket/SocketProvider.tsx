@@ -4,13 +4,12 @@ import { SocketContext } from "./socketContext";
 import { setupHeartbeat } from "./socketHeartBeat";
 import { useNotification } from "../components/notification/NotificationContext";
 
-
 interface Props {
   children: ReactNode;
 }
 
 export function SocketProvider({ children }: Props) {
-    const { addNotification } = useNotification()
+  const { addNotification } = useNotification();
   const socket = useMemo(() => getSocket(), []);
 
   useEffect(() => {
@@ -33,9 +32,9 @@ export function SocketProvider({ children }: Props) {
     socket.on("error", (msg) => {
       addNotification({
         title: msg.message,
-        type: "error"
-      })
-    })
+        type: "error",
+      });
+    });
 
     return () => {
       cleanupHeartbeat();

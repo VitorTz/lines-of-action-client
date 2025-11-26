@@ -96,11 +96,6 @@ const LobbyPage = ({ navigate }: LobbyPageProps) => {
     socket.on("match-found", (data) => {
       setMatchData(data);
       matchAcceptedRef.current = false;
-      addNotification({
-        title: "Partida encontrada!",
-        message: `Oponente: ${data.opponentUsername}`,
-        type: "success",
-      });
     });
 
     // Handler: jogo iniciado
