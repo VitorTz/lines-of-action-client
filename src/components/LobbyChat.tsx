@@ -11,20 +11,19 @@ interface ChatMessage {
   text: string;
   timestamp: number;
   avatarUrl?: string;
-  type: 'message' | 'system';
+  type: "message" | "system";
 }
 
 const LobbyChat = () => {
   const socket = useSocket();
   const { user } = useAuth();
-  
+
   const [isOpen, setIsOpen] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  // Auto-scroll
+  
   useEffect(() => {
     if (isOpen) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -34,10 +33,9 @@ const LobbyChat = () => {
   // Gerencia conexão com a sala
   useEffect(() => {
     if (isConnected && user) {
-      // Envia avatar também no join, caso o backend queira registrar
-      socket.emit("join-lobby-chat", { 
+      socket.emit("join-lobby-chat", {
         username: user.username,
-        avatarUrl: user.perfilImageUrl 
+        avatarUrl: user.perfilImageUrl,
       });
 
       const handleMsg = (data: ChatMessage) => {
@@ -76,7 +74,7 @@ const LobbyChat = () => {
       text: inputText,
       username: user.username,
       userId: user.id,
-      avatarUrl: user.perfilImageUrl // Garante que o avatar vai na mensagem
+      avatarUrl: user.perfilImageUrl
     });
     setInputText("");
   };
@@ -91,16 +89,19 @@ const LobbyChat = () => {
   }
 
   return (
-    <div className={`lobby-chat-container ${isOpen ? 'open' : 'minimized'}`}>
+    <div className={`lobby-chat-container ${isOpen ? "open" : "minimized"}`}>
       <div className="lobby-chat-header" onClick={() => setIsOpen(!isOpen)}>
         <div className="header-title">
           <MessageSquare size={16} />
           <span>Chat da Fila</span>
         </div>
         <div className="header-actions">
-          <button 
-            className="icon-btn" 
-            onClick={(e) => { e.stopPropagation(); handleDisconnect(); }}
+          <button
+            className="icon-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDisconnect();
+            }}
             title="Sair do chat"
           >
             <X size={16} />
@@ -117,20 +118,22 @@ const LobbyChat = () => {
             {messages.length === 0 && (
               <p className="empty-chat-msg">Bem-vindo ao chat da fila.</p>
             )}
-            {messages.map((msg) => {              
+            {messages.map((msg) => {
               const isOwnMessage = user?.username === msg.username;
 
               return (
-                <div 
-                  key={msg.id} 
-                  className={`chat-msg-item ${isOwnMessage ? 'own-message' : ''}`}
+                <div
+                  key={msg.id}
+                  className={`chat-msg-item ${
+                    isOwnMessage ? "own-message" : ""
+                  }`}
                 >
                   {/* Avatar */}
                   <div className="msg-avatar-container">
                     {msg.avatarUrl ? (
-                      <img 
-                        src={msg.avatarUrl} 
-                        alt={msg.username} 
+                      <img
+                        src={msg.avatarUrl}
+                        alt={msg.username}
                         className="msg-avatar-img"
                       />
                     ) : (
@@ -143,7 +146,7 @@ const LobbyChat = () => {
                   {/* Conteúdo */}
                   <div className="msg-content-wrapper">
                     <span className="msg-user">
-                      {isOwnMessage ? 'Você' : msg.username}:
+                      {isOwnMessage ? "Você" : msg.username}:
                     </span>
                     <span className="msg-text">{msg.text}</span>
                   </div>

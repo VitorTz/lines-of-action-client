@@ -124,7 +124,7 @@
   color: var(--info);
 }
 
-/* Ícone */
+
 .notification__icon {
   flex-shrink: 0;
   display: flex;
@@ -132,7 +132,7 @@
   justify-content: center;
 }
 
-/* Conteúdo */
+
 .notification__content {
   flex: 1;
   min-width: 0;
@@ -151,7 +151,7 @@
   line-height: 1.5;
 }
 
-/* Botão Fechar */
+
 .notification__close {
   flex-shrink: 0;
   background: none;

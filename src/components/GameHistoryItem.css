@@ -1,28 +1,32 @@
 .history-item-card {
   display: grid;
-  /* Grid Ajustado: Jogadores (Maior) | Stats | Botão */
-  grid-template-columns: 2fr 1.5fr auto; 
+  grid-template-columns: 2fr 1.5fr auto;
   align-items: center;
   gap: 20px;
   background: var(--card-bg);
   border-bottom: 1px solid var(--border);
   padding: 16px 24px;
   transition: background 0.2s;
-  border-left: 4px solid transparent; /* Borda indicativa */
+  border-left: 4px solid transparent;
 }
 
 .history-item-card:hover {
   background: var(--light);
 }
 
-/* --- Cores da Borda (Indicativo Sutil) --- */
-.history-item-card.win { border-left-color: var(--success); }
-.history-item-card.loss { border-left-color: var(--error); }
-.history-item-card.draw { border-left-color: var(--text-light); }
-.history-item-card.neutral { border-left-color: var(--primary); }
+.history-item-card.win {
+  border-left-color: var(--success);
+}
+.history-item-card.loss {
+  border-left-color: var(--error);
+}
+.history-item-card.draw {
+  border-left-color: var(--text-light);
+}
+.history-item-card.neutral {
+  border-left-color: var(--primary);
+}
 
-
-/* --- Matchup --- */
 .matchup-container {
   display: flex;
   align-items: center;
@@ -39,7 +43,7 @@
 }
 
 .player-info.is-loser {
-  opacity: 0.6; /* Perdedor fica levemente apagado */
+  opacity: 0.6;
 }
 
 .player-info.is-winner .username {
@@ -57,17 +61,16 @@
   font-size: 0.7rem;
   text-transform: uppercase;
   font-weight: 700;
-  color: #d97706; /* Cor dourada/bronze */
+  color: #d97706;
   letter-spacing: 0.5px;
 }
 
-/* Avatar com Coroa */
 .avatar-wrapper {
   position: relative;
 }
 
 .avatar-small {
-  width: 40px; /* Aumentei um pouco */
+  width: 40px;
   height: 40px;
   border-radius: 50%;
   background: #e2e8f0;
@@ -82,7 +85,7 @@
 }
 
 .player-info.is-winner .avatar-small {
-  border-color: #fbbf24; /* Borda dourada no vencedor */
+  border-color: #fbbf24;
   box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.2);
 }
 
@@ -99,13 +102,12 @@
   background: white;
   border-radius: 50%;
   padding: 2px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Versus Divider */
 .versus-divider {
   display: flex;
   align-items: center;
@@ -120,7 +122,6 @@
   opacity: 0.3;
 }
 
-/* --- Stats --- */
 .stats-grid {
   display: flex;
   gap: 16px;
@@ -142,7 +143,6 @@
   opacity: 0.6;
 }
 
-/* --- Action --- */
 .btn-review {
   display: flex;
   align-items: center;
@@ -166,21 +166,37 @@
   transform: translateY(-1px);
 }
 
-/* Mobile Responsiveness */
 @media (max-width: 768px) {
   .history-item-card {
-    grid-template-columns: 1fr auto; /* Stats e Action na mesma linha ou stack */
-    grid-template-areas: 
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
       "matchup matchup"
       "stats action";
     gap: 16px;
     padding: 16px;
   }
-  
-  .matchup-container { grid-area: matchup; justify-content: space-between; width: 100%; }
-  .stats-grid { grid-area: stats; flex-direction: column; gap: 4px; }
-  .action-area { grid-area: action; align-self: center; justify-self: end; }
-  
-  .btn-label { display: none; } /* Esconde texto do botão em mobile, deixa só icone */
-  .btn-review { padding: 8px; border-radius: 50%; }
+
+  .matchup-container {
+    grid-area: matchup;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .stats-grid {
+    grid-area: stats;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .action-area {
+    grid-area: action;
+    align-self: center;
+    justify-self: end;
+  }
+
+  .btn-label {
+    display: none;
+  }
+  .btn-review {
+    padding: 8px;
+    border-radius: 50%;
+  }
 }

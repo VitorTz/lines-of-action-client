@@ -1,51 +1,49 @@
-
-
 .main-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
 }
 
 .image-wrapper {
-    display: flex;
-    justify-content: center;
-    width: 100%;
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 
 .button-row {
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* 2 equal columns */
-    gap: 10px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
 .button-row button,
 .button-row label {
-    width: 100%;
+  width: 100%;
 }
 
 .button-row button {
-    width: 100%;
+  width: 100%;
 }
 
 .profile-img {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #1e1e1e;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #1e1e1e;
 }
 
 .profile-img-placeholder {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    border: 2px solid #1e1e1e;
-    background: #ccc;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 2px solid #1e1e1e;
+  background: #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
 }

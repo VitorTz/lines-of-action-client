@@ -13,7 +13,6 @@ interface SignupPageProps {
 }
 
 const SignupPage = ({ navigate }: SignupPageProps) => {
-  
   const { addNotification } = useNotification();
   const { setUser, signup } = useAuth();
 
@@ -42,7 +41,7 @@ const SignupPage = ({ navigate }: SignupPageProps) => {
       type: "success",
       duration: 3000,
     });
-  }
+  };
 
   const methods = useForm<SignupForm>({
     defaultValues: {
@@ -71,35 +70,36 @@ const SignupPage = ({ navigate }: SignupPageProps) => {
 
     if (error) {
       try {
-        const message: string = error.response.data.error
-        handleError(message)
+        const message: string = error.response.data.error;
+        handleError(message);
       } catch (err) {
-        handleError('Não foi possível criar sua conta, verifique as informações.')
+        handleError(
+          "Não foi possível criar sua conta, verifique as informações."
+        );
       }
-      return
+      return;
     }
 
     if (signupForm.perfilImageFile) {
-      showImageUploadNotification()
-      const result = await linesApi
-        .images
+      showImageUploadNotification();
+      const result = await linesApi.images
         .upload(signupForm.perfilImageFile)
-        .then(result => { return result })
-        .catch(err => console.log(err))
+        .then((result) => {
+          return result;
+        })
+        .catch((err) => console.log(err));
 
       if (result) {
         const imgSrc = linesApi.images.getImageSrc(result.filename);
-        await linesApi
-          .user
+        await linesApi.user
           .updateProfileImageUrl(imgSrc)
-          .then(user => setUser(user))
-        console.log(imgSrc)
+          .then((user) => setUser(user));
+        console.log(imgSrc);
       }
     }
-    
+
     handleSuccess(signupForm.username);
     navigate("login");
-
   };
 
   return (
@@ -113,28 +113,36 @@ const SignupPage = ({ navigate }: SignupPageProps) => {
               placeholder="username"
               {...register("username", { required: true })}
             />
-            {errors.username && <div className="error-message">Campo obrigatório</div>}
+            {errors.username && (
+              <div className="error-message">Campo obrigatório</div>
+            )}
 
             <input
               placeholder="email"
               type="email"
               {...register("email", { required: true })}
             />
-            {errors.email && <div className="error-message">Campo obrigatório</div>}
+            {errors.email && (
+              <div className="error-message">Campo obrigatório</div>
+            )}
 
             <input
               placeholder="senha"
               type="password"
               {...register("password", { required: true })}
             />
-            {errors.password && <div className="error-message">Campo obrigatório</div>}
+            {errors.password && (
+              <div className="error-message">Campo obrigatório</div>
+            )}
 
             <input
               placeholder="idade"
               type="number"
               {...register("age", { required: true, valueAsNumber: true })}
             />
-            {errors.age && <div className="error-message">Campo obrigatório</div>}
+            {errors.age && (
+              <div className="error-message">Campo obrigatório</div>
+            )}
 
             <AddressForm />
 
@@ -155,8 +163,7 @@ const SignupPage = ({ navigate }: SignupPageProps) => {
         </FormProvider>
 
         <p>
-          Já tem uma conta?{" "}
-          <a onClick={() => navigate("login")}>Entrar</a>
+          Já tem uma conta? <a onClick={() => navigate("login")}>Entrar</a>
         </p>
       </div>
     </div>

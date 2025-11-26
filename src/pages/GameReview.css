@@ -1,4 +1,3 @@
-
 .match-header-card {
   background-color: #ffffff;
   border: 1px solid #f0e5dd;
@@ -57,12 +56,12 @@
 }
 
 .white-indicator {
-  background-color: #FFF4ED;
+  background-color: #fff4ed;
   color: #2b2118;
 }
 
 .black-indicator {
-  background-color: #2B2118;
+  background-color: #2b2118;
   color: #fff;
 }
 
@@ -116,7 +115,8 @@
   letter-spacing: 2px;
 }
 
-.match-date, .match-moves-count {
+.match-date,
+.match-moves-count {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -129,14 +129,13 @@
   margin: 0 10px;
 }
 
-
 @media (max-width: 768px) {
   .match-header-card {
     flex-direction: column;
     gap: 20px;
     text-align: center;
   }
-  
+
   .player-info {
     width: 100%;
     justify-content: center !important;

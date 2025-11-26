@@ -6,7 +6,7 @@
   border-radius: 8px;
   box-shadow: var(--shadow-md);
   border: 1px solid var(--border);
-  width: 100%; /* Ocupa largura disponível */
+  width: 100%;
   max-width: 100%;
   margin: 0 auto;
 }
@@ -36,14 +36,13 @@
   transform: translate(-50%, -50%);
   color: white;
   font-size: 0.9rem;
-  background-color: rgba(0,0,0,0.6);
+  background-color: rgba(0, 0, 0, 0.6);
   padding: 4px 8px;
   border-radius: 4px;
   z-index: 1;
-  pointer-events: none; /* Deixa clicar através do texto */
+  pointer-events: none;
 }
 
-/* Novos controles flutuantes na parte inferior do vídeo */
 .video-controls-overlay {
   position: absolute;
   bottom: 10px;
@@ -78,6 +77,6 @@
 }
 
 .control-btn.off {
-  background: #ef4444; /* Vermelho quando desligado */
+  background: #ef4444;
   color: white;
 }

@@ -1,50 +1,59 @@
-import { type GameHistory } from '../types/game';
-import { Calendar, Clock, Move, PlayCircle, Crown } from 'lucide-react';
-import './GameHistoryItem.css';
-
+import { type GameHistory } from "../types/game";
+import { Calendar, Clock, Move, PlayCircle, Crown } from "lucide-react";
+import "./GameHistoryItem.css";
 
 interface GameHistoryItemProps {
   game: GameHistory;
   onReview: () => void;
 }
 
-
 export const GameHistoryItem = ({ game, onReview }: GameHistoryItemProps) => {
-  
   if (!game || !game.playerBlack || !game.playerWhite) return null;
 
-  
-  const blackWon = (game.winner as any)._id === (game.playerBlack as any)._id
-  const whiteWon = (game.winner as any)._id === (game.playerWhite as any)._id
+  const blackWon = (game.winner as any)._id === (game.playerBlack as any)._id;
+  const whiteWon = (game.winner as any)._id === (game.playerWhite as any)._id;
 
   const start = new Date(game.gameCreatedAt);
   const end = new Date(game.gameUpdatedAt);
-  const durationMs = end.getTime() > start.getTime() ? end.getTime() - start.getTime() : 0;
-  
+  const durationMs =
+    end.getTime() > start.getTime() ? end.getTime() - start.getTime() : 0;
+
   const minutes = Math.floor(durationMs / 60000);
   const seconds = ((durationMs % 60000) / 1000).toFixed(0);
-  const durationStr = `${minutes}m ${parseInt(seconds) < 10 ? '0' : ''}${seconds}s`;
+  const durationStr = `${minutes}m ${
+    parseInt(seconds) < 10 ? "0" : ""
+  }${seconds}s`;
 
-  const dateStr = new Intl.DateTimeFormat('pt-BR', {
-    day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+  const dateStr = new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
   }).format(start);
 
-  
-  const renderPlayer = (playerUser: any, isWinner: boolean) => (    
-    <div className={`player-info ${isWinner ? 'is-winner' : 'is-loser'}`}>
+  const renderPlayer = (playerUser: any, isWinner: boolean) => (
+    <div className={`player-info ${isWinner ? "is-winner" : "is-loser"}`}>
       <div className="avatar-wrapper">
         <div className="avatar-small">
           {playerUser.perfilImageUrl ? (
             <img src={playerUser.perfilImageUrl} alt={playerUser.username} />
           ) : (
-            <span>{playerUser.username?.substring(0, 2).toUpperCase() || "??"}</span>
+            <span>
+              {playerUser.username?.substring(0, 2).toUpperCase() || "??"}
+            </span>
           )}
         </div>
-        {isWinner && <div className="winner-crown"><Crown size={12} fill="#fbbf24" stroke="none" /></div>}
+        {isWinner && (
+          <div className="winner-crown">
+            <Crown size={12} fill="#fbbf24" stroke="none" />
+          </div>
+        )}
       </div>
-      
+
       <div className="player-text">
-        <span className="username">{playerUser.username || "Desconhecido"}</span>
+        <span className="username">
+          {playerUser.username || "Desconhecido"}
+        </span>
         {isWinner && <span className="winner-label">Vencedor</span>}
       </div>
     </div>
@@ -52,15 +61,14 @@ export const GameHistoryItem = ({ game, onReview }: GameHistoryItemProps) => {
 
   return (
     <li className={`history-item-card`}>
-      
       {/* Jogadores */}
       <div className="matchup-container">
         {renderPlayer(game.playerBlack, blackWon)}
-        
+
         <div className="versus-divider">
-            <span className="vs-text">VS</span>
+          <span className="vs-text">VS</span>
         </div>
-        
+
         {renderPlayer(game.playerWhite, whiteWon)}
       </div>
 

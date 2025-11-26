@@ -9,14 +9,11 @@ import MatchFoundModal from "../components/MatchFountModal";
 import LobbyChat from "../components/LobbyChat";
 import "./LobbyPage.css";
 
-
 type ActiveTab = "players" | "bots";
-
 
 interface LobbyPageProps {
   navigate: (page: PageType, data?: any) => void;
 }
-
 
 const MATCH_TIMEOUT_SECONDS = 25;
 
@@ -25,13 +22,8 @@ const LobbyPage = ({ navigate }: LobbyPageProps) => {
   const { user } = useAuth();
   const { addNotification } = useNotification();
   const [activeTab, setActiveTab] = useState<ActiveTab>("players");
-  
-  const {
-    onQueue,
-    setOnQueue,
-    matchData,
-    setMatchData,
-  } = useLobby();
+
+  const { onQueue, setOnQueue, matchData, setMatchData } = useLobby();
 
   const [timeRemaining, setTimeRemaining] = useState(MATCH_TIMEOUT_SECONDS);
   const [showMatchModal, setShowMatchModal] = useState(false);
@@ -44,7 +36,7 @@ const LobbyPage = ({ navigate }: LobbyPageProps) => {
       timerRef.current = null;
     }
   };
-  
+
   useEffect(() => {
     if (matchData && !matchAcceptedRef.current) {
       setShowMatchModal(true);
@@ -61,8 +53,10 @@ const LobbyPage = ({ navigate }: LobbyPageProps) => {
         });
       }, 1000);
     }
-    
-    return () => { clearTimer(); };
+
+    return () => {
+      clearTimer();
+    };
   }, [matchData]);
 
   useEffect(() => {
@@ -108,7 +102,7 @@ const LobbyPage = ({ navigate }: LobbyPageProps) => {
         gameId: data.gameId,
         color: data.color,
       });
-    });    
+    });
 
     return () => {
       socket.off("exit-queue");
@@ -116,8 +110,10 @@ const LobbyPage = ({ navigate }: LobbyPageProps) => {
       socket.off("num-players-on-lobby");
       socket.off("on-queue");
       socket.off("match-found");
-      socket.off("game-start");      
-      if (user) { socket.emit("exit-queue", { playerId: user.id }); }
+      socket.off("game-start");
+      if (user) {
+        socket.emit("exit-queue", { playerId: user.id });
+      }
       clearTimer();
     };
   }, [user, socket]);
@@ -150,28 +146,28 @@ const LobbyPage = ({ navigate }: LobbyPageProps) => {
 
   const handleAcceptMatch = () => {
     if (!user || !matchData) return;
-    
+
     matchAcceptedRef.current = true;
     clearTimer();
-    
+
     socket.emit("match-ready", {
       playerId: user.id,
       gameId: matchData.gameId,
     });
-        
+
     setTimeRemaining(-1);
   };
 
   const handleDeclineMatch = () => {
     if (!user) return;
-    
+
     matchAcceptedRef.current = false;
     clearTimer();
     setShowMatchModal(false);
     setMatchData(null);
-    
+
     socket.emit("exit-queue", { playerId: user.id });
-    
+
     addNotification({
       title: "Você recusou a partida",
       type: "info",
@@ -205,7 +201,6 @@ const LobbyPage = ({ navigate }: LobbyPageProps) => {
         <main className="lobby-content">
           {activeTab === "players" && (
             <div className="players-tab-content">
-              
               {/* Área de Status da Fila */}
               <div className="queue-status-area">
                 {onQueue ? (
@@ -214,21 +209,20 @@ const LobbyPage = ({ navigate }: LobbyPageProps) => {
                     <h2>Procurando Oponente...</h2>
                   </div>
                 ) : (
-                  <div className="queue-status">                    
+                  <div className="queue-status">
                     <p className="queue-description">
                       Entre na fila para ser pareado com jogadores do seu nível.
                     </p>
                   </div>
                 )}
               </div>
-              
+
               <div className="lobby-chat-wrapper">
                 <LobbyChat />
               </div>
-
-            </div>            
+            </div>
           )}
-          
+
           {activeTab === "bots" && <BotsTab navigate={navigate} />}
         </main>
 
@@ -252,16 +246,14 @@ const LobbyPage = ({ navigate }: LobbyPageProps) => {
       </div>
 
       {/* Modal de Partida Encontrada */}
-      {
-        showMatchModal && 
-        matchData && 
-        <MatchFoundModal 
-          matchData={matchData} 
-          timeRemaining={timeRemaining} 
-          handleAcceptMatch={handleAcceptMatch} 
-          handleDeclineMatch={handleDeclineMatch} 
+      {showMatchModal && matchData && (
+        <MatchFoundModal
+          matchData={matchData}
+          timeRemaining={timeRemaining}
+          handleAcceptMatch={handleAcceptMatch}
+          handleDeclineMatch={handleDeclineMatch}
         />
-      }
+      )}
     </div>
   );
 };

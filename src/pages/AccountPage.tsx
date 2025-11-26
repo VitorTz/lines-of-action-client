@@ -1,12 +1,22 @@
-import { Camera, User, Mail, Calendar, Check, X, Loader, LogOut, MapPin, Hash } from "lucide-react";
+import {
+  Camera,
+  User,
+  Mail,
+  Calendar,
+  Check,
+  X,
+  Loader,
+  LogOut,
+  MapPin,
+  Hash,
+} from "lucide-react";
 import { useAuth } from "../components/auth/AuthContext";
 import { useState } from "react";
-import './AccountPage.css'
+import "./AccountPage.css";
 import { formatDate } from "../util/util";
 import { linesApi } from "../api/linesApi";
 import { useNotification } from "../components/notification/NotificationContext";
 import type { PageType } from "../types/general";
-
 
 interface AccountPageProps {
   navigate: (page: PageType, data?: any) => void;
@@ -14,7 +24,7 @@ interface AccountPageProps {
 
 const AccountPage = ({ navigate }: AccountPageProps) => {
   const { user, logout, setUser } = useAuth();
-  const { addNotification } = useNotification()
+  const { addNotification } = useNotification();
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
     username: user?.username ?? "",
@@ -23,8 +33,8 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
     address: {
       country: user?.address.country ?? "",
       city: user?.address?.city ?? "",
-      state: user?.address?.state ?? ""
-    }
+      state: user?.address?.state ?? "",
+    },
   });
 
   const [loading, setLoading] = useState(false);
@@ -34,43 +44,42 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
 
   const handleSuccess = () => {
     addNotification({
-        title: "Dados alterados!",
-        type: "success"
-      }
-    )
-  }
-
+      title: "Dados alterados!",
+      type: "success",
+    });
+  };
 
   const handleError = (error: any) => {
-    let message = "Verifique se os dados foram preenchidos corretamente"
+    let message = "Verifique se os dados foram preenchidos corretamente";
     try {
-      const m = error.response.data.error  
-      message = m
-    } catch (err) { }
+      const m = error.response.data.error;
+      message = m;
+    } catch (err) {}
 
     addNotification({
       title: "Erro",
       message: message,
-      type: "error"
-    })
-  }
-
+      type: "error",
+    });
+  };
 
   const handleUpdateProfile = async () => {
-    setLoading(true);    
-    await linesApi
-      .user
+    setLoading(true);
+    await linesApi.user
       .updateProfile(editForm)
-      .then((user) => {handleSuccess(); setUser(user)})
-      .catch(err => handleError(err))
+      .then((user) => {
+        handleSuccess();
+        setUser(user);
+      })
+      .catch((err) => handleError(err));
 
-    setIsEditing(false)
-    setLoading(false)
+    setIsEditing(false);
+    setLoading(false);
   };
 
   const handleImageUpload = async (e: any) => {
-    if (!user) return;    
-    
+    if (!user) return;
+
     const file = e.target.files[0];
     if (!file) return;
 
@@ -80,40 +89,41 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
     }
 
     setUploadingImage(true);
-      const result = await linesApi
-        .images
-        .upload(file)
-        .then(result => { return result })
-        .catch(err => console.log(err))
+    const result = await linesApi.images
+      .upload(file)
+      .then((result) => {
+        return result;
+      })
+      .catch((err) => console.log(err));
 
-      if (result) {
-        const imgSrc = linesApi.images.getImageSrc(result.filename);
-        await linesApi
-          .user
-          .updateProfileImageUrl(imgSrc)
-          .then(user => setUser(user))
-        console.log(imgSrc)
-      }
+    if (result) {
+      const imgSrc = linesApi.images.getImageSrc(result.filename);
+      await linesApi.user
+        .updateProfileImageUrl(imgSrc)
+        .then((user) => setUser(user));
+      console.log(imgSrc);
+    }
     setUploadingImage(false);
   };
-  
 
   const handleCancelEdit = () => {
     setEditForm({
       username: user!.username,
       email: user!.email,
       age: user!.age,
-      address: user!.address
+      address: user!.address,
     });
     setIsEditing(false);
   };
 
   const handleLogout = async () => {
     logout();
-    navigate('lobby');
+    navigate("lobby");
   };
 
-  if (!user) { return <></>; }
+  if (!user) {
+    return <></>;
+  }
 
   return (
     <div className="account-container">
@@ -121,15 +131,14 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
         {/* Header com imagem de perfil */}
         <div className="account-header">
           <div className="profile-image-container">
-            {
-              user.perfilImageUrl ?
-              <img src={user.perfilImageUrl} alt="" className="profile-image"  /> 
-              :
+            {user.perfilImageUrl ? (
+              <img src={user.perfilImageUrl} alt="" className="profile-image" />
+            ) : (
               <span className="profile-initial">
                 {user.username.charAt(0).toUpperCase()}
               </span>
-            }
-            
+            )}
+
             <label htmlFor="profile-image" className="camera-button">
               {uploadingImage ? (
                 <Loader size={20} className="spinner" />
@@ -142,10 +151,10 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
               type="file"
               accept="image/*"
               onChange={handleImageUpload}
-              style={{ display: 'none' }}
+              style={{ display: "none" }}
             />
           </div>
-          
+
           <h1 className="profile-username">{user.username}</h1>
         </div>
 
@@ -160,9 +169,11 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
               </label>
               <input
                 type="text"
-                className={`form-input ${!isEditing ? 'disabled' : ''}`}
+                className={`form-input ${!isEditing ? "disabled" : ""}`}
                 value={editForm.username}
-                onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, username: e.target.value })
+                }
                 disabled={!isEditing || loading}
                 placeholder="username"
               />
@@ -176,9 +187,11 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
               </label>
               <input
                 type="email"
-                className={'form-input disabled'}
+                className={"form-input disabled"}
                 value={editForm.email}
-                onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, email: e.target.value })
+                }
                 disabled={true}
                 placeholder="bob@email.com"
               />
@@ -192,9 +205,14 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
               </label>
               <input
                 type="number"
-                className={`form-input ${!isEditing ? 'disabled' : ''}`}
+                className={`form-input ${!isEditing ? "disabled" : ""}`}
                 value={editForm.age}
-                onChange={(e) => setEditForm({ ...editForm, age: parseInt(e.target.value) || 0 })}
+                onChange={(e) =>
+                  setEditForm({
+                    ...editForm,
+                    age: parseInt(e.target.value) || 0,
+                  })
+                }
                 disabled={!isEditing || loading}
                 placeholder="25"
               />
@@ -206,32 +224,39 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
                 <MapPin size={20} />
                 Endereço
               </h3>
-              
+
               <div className="address-grid">
                 <div className="address-field full-width">
                   <label className="address-label">País</label>
                   <input
                     type="text"
-                    className={`address-input ${!isEditing ? 'disabled' : ''}`}
+                    className={`address-input ${!isEditing ? "disabled" : ""}`}
                     value={editForm.address.country}
-                    onChange={(e) => setEditForm({
-                      ...editForm,
-                      address: { ...editForm.address, country: e.target.value }
-                    })}
+                    onChange={(e) =>
+                      setEditForm({
+                        ...editForm,
+                        address: {
+                          ...editForm.address,
+                          country: e.target.value,
+                        },
+                      })
+                    }
                     disabled={!isEditing || loading}
                   />
-                </div>                
+                </div>
 
                 <div className="address-field">
                   <label className="address-label">Cidade</label>
                   <input
                     type="text"
-                    className={`address-input ${!isEditing ? 'disabled' : ''}`}
+                    className={`address-input ${!isEditing ? "disabled" : ""}`}
                     value={editForm.address.city}
-                    onChange={(e) => setEditForm({
-                      ...editForm,
-                      address: { ...editForm.address, city: e.target.value }
-                    })}
+                    onChange={(e) =>
+                      setEditForm({
+                        ...editForm,
+                        address: { ...editForm.address, city: e.target.value },
+                      })
+                    }
                     disabled={!isEditing || loading}
                   />
                 </div>
@@ -240,16 +265,17 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
                   <label className="address-label">Estado</label>
                   <input
                     type="text"
-                    className={`address-input ${!isEditing ? 'disabled' : ''}`}
+                    className={`address-input ${!isEditing ? "disabled" : ""}`}
                     value={editForm.address.state}
-                    onChange={(e) => setEditForm({
-                      ...editForm,
-                      address: { ...editForm.address, state: e.target.value }
-                    })}
+                    onChange={(e) =>
+                      setEditForm({
+                        ...editForm,
+                        address: { ...editForm.address, state: e.target.value },
+                      })
+                    }
                     disabled={!isEditing || loading}
                   />
                 </div>
-
               </div>
             </div>
 
@@ -259,9 +285,7 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
                 <Calendar size={18} />
                 Criado em
               </label>
-              <div className="created-date">
-                {formatDate(user.createdAt)}
-              </div>
+              <div className="created-date">{formatDate(user.createdAt)}</div>
             </div>
           </div>
 
@@ -269,14 +293,22 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
           {error && (
             <div className="alert alert-error">
               <span>{error}</span>
-              <X size={20} onClick={() => setError("")} style={{ cursor: 'pointer' }} />
+              <X
+                size={20}
+                onClick={() => setError("")}
+                style={{ cursor: "pointer" }}
+              />
             </div>
           )}
 
           {success && (
             <div className="alert alert-success">
               <span>{success}</span>
-              <X size={20} onClick={() => setSuccess("")} style={{ cursor: 'pointer' }} />
+              <X
+                size={20}
+                onClick={() => setSuccess("")}
+                style={{ cursor: "pointer" }}
+              />
             </div>
           )}
 
@@ -284,7 +316,10 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
           <div className="action-buttons">
             {!isEditing ? (
               <>
-                <button onClick={() => setIsEditing(true)} className="btn btn-primary">
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="btn btn-primary"
+                >
                   Editar perfil
                 </button>
                 <button onClick={handleLogout} className="btn btn-danger">
@@ -294,7 +329,11 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
               </>
             ) : (
               <>
-                <button onClick={handleUpdateProfile} disabled={loading} className="btn btn-success">
+                <button
+                  onClick={handleUpdateProfile}
+                  disabled={loading}
+                  className="btn btn-success"
+                >
                   {loading ? (
                     <>
                       <Loader size={18} className="spinner" />
@@ -307,7 +346,11 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
                     </>
                   )}
                 </button>
-                <button onClick={handleCancelEdit} disabled={loading} className="btn btn-secondary">
+                <button
+                  onClick={handleCancelEdit}
+                  disabled={loading}
+                  className="btn btn-secondary"
+                >
                   <X size={18} />
                   Cancelar
                 </button>
@@ -316,7 +359,6 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
           </div>
         </div>
       </div>
-      
     </div>
   );
 };

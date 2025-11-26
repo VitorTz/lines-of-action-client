@@ -8,24 +8,24 @@ const SOUND_PATHS = {
 
 export const useGameSounds = (initialEnabled: boolean = true) => {
   const [soundEnabled, setSoundEnabled] = useState(initialEnabled);
-    
+
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioBuffers = useRef<{ [key: string]: AudioBuffer }>({});
-  
+
   useEffect(() => {
     const initAudio = async () => {
       const Ctx = window.AudioContext || (window as any).webkitAudioContext;
       if (!Ctx) return;
-      
+
       const ctx = new Ctx();
       audioContextRef.current = ctx;
-      
+
       const loadBuffer = async (url: string): Promise<AudioBuffer> => {
         const response = await fetch(url);
         const arrayBuffer = await response.arrayBuffer();
         return await ctx.decodeAudioData(arrayBuffer);
       };
-      
+
       try {
         const [moveBuffer, captureBuffer, startBuffer] = await Promise.all([
           loadBuffer(SOUND_PATHS.move),
@@ -47,7 +47,7 @@ export const useGameSounds = (initialEnabled: boolean = true) => {
       audioContextRef.current?.close();
     };
   }, []);
-  
+
   const resumeContext = async () => {
     const ctx = audioContextRef.current;
     if (ctx && ctx.state === 'suspended') {
@@ -59,23 +59,22 @@ export const useGameSounds = (initialEnabled: boolean = true) => {
     if (!soundEnabled || !audioContextRef.current || !audioBuffers.current[key]) return;
 
     try {
-      const ctx = audioContextRef.current;      
-      await resumeContext();      
+      const ctx = audioContextRef.current;
+      await resumeContext();
       const source = ctx.createBufferSource();
-      source.buffer = audioBuffers.current[key];      
+      source.buffer = audioBuffers.current[key];
       source.connect(ctx.destination);
       source.start(0);
     } catch (error) {
       console.warn(`Erro ao tocar som ${key}:`, error);
     }
   }, [soundEnabled]);
-
-  // Toca sons sintetizados (Vitória/Derrota)
+  
   const playTone = useCallback(async (frequency: number, type: OscillatorType = "sine") => {
     if (!soundEnabled || !audioContextRef.current) return;
-    
+
     const ctx = audioContextRef.current;
-    await resumeContext(); // Acorda o contexto aqui também
+    await resumeContext();
 
     const oscillator = ctx.createOscillator();
     const gainNode = ctx.createGain();
@@ -98,9 +97,9 @@ export const useGameSounds = (initialEnabled: boolean = true) => {
   const playCapture = useCallback(() => playBuffer('capture'), [playBuffer]);
   const playStart = useCallback(() => playBuffer('game-start'), [playBuffer]);
   const playWin = useCallback(() => {
-    playTone(523.25); 
-    setTimeout(() => playTone(659.25), 200); 
-    setTimeout(() => playTone(783.99), 400); 
+    playTone(523.25);
+    setTimeout(() => playTone(659.25), 200);
+    setTimeout(() => playTone(783.99), 400);
   }, [playTone]);
 
   return {

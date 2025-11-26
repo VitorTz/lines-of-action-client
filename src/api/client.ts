@@ -1,7 +1,7 @@
-import axios, { 
-    type AxiosInstance, 
-    type AxiosRequestConfig, 
-    type AxiosResponse 
+import axios, {
+  type AxiosInstance,
+  type AxiosRequestConfig,
+  type AxiosResponse
 } from 'axios';
 
 
@@ -23,32 +23,32 @@ class ApiClient {
       withCredentials: true
     });
   }
-  
+
   private async request<T>(method: string, url: string, config: AxiosRequestConfig = {}): Promise<T> {
     const response: AxiosResponse<T> = await this.client.request({ method, url, ...config });
     return response.data;
   }
-  
+
   async get<T>(url: string, params?: any, config?: AxiosRequestConfig): Promise<T> {
     return this.request<T>('GET', url, { params, ...config });
   }
-  
+
   async post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
     return this.request<T>('POST', url, { data, ...config });
   }
-  
+
   async put<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
     return this.request<T>('PUT', url, { data, ...config });
   }
-  
+
   async patch<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
     return this.request<T>('PATCH', url, { data, ...config });
   }
-  
+
   async delete<T>(url: string, params?: any, config?: AxiosRequestConfig): Promise<T> {
     return this.request<T>('DELETE', url, { params, ...config });
   }
-  
+
   async upload<T>(url: string, file: File | Blob, fieldName = 'file', config?: AxiosRequestConfig): Promise<T> {
     const formData = new FormData();
     formData.append(fieldName, file);

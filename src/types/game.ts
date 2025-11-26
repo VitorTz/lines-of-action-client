@@ -19,7 +19,7 @@ export type Board = number[][];
 
 
 export interface Move {
-  
+
   player: 'black' | 'white'
   from: Position;
   to: Position;
@@ -34,7 +34,7 @@ export interface Game {
   playerBlack: string;
   playerWhite: string;
   status: 'waiting' | 'active' | 'finished' | 'abandoned';
-  turn: 'black' | 'white';  
+  turn: 'black' | 'white';
   board: number[][];
   moveHistory: Move[];
   winner?: string;
@@ -47,12 +47,12 @@ export interface Game {
   startedAt: Date;
   endedAt: Date;
 
-  
+
 }
 
 
 export interface GameHistory {
-  
+
   gameId: string
   playerBlack: User
   playerWhite: User

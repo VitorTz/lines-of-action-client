@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { 
-  type Board, 
-  type Position, 
-  type Piece,   
-  BLACK_PIECE, 
-  WHITE_PIECE, 
-  EMPTY_CELL, 
+import {
+  type Board,
+  type Position,
+  type Piece,
+  BLACK_PIECE,
+  WHITE_PIECE,
+  EMPTY_CELL,
   type Difficulty
 } from "../types/game";
 import { GameModel } from "../model/GameModel";
@@ -18,12 +18,12 @@ const INITIAL_BOARD = generateNewGameBoard();
 
 
 export const useGameBot = (difficulty: Difficulty) => {
-  
+
   const [board, setBoard] = useState<Board>(INITIAL_BOARD);
   const [currentPlayer, setCurrentPlayer] = useState<Piece>(BLACK_PIECE);
   const [gameStarted, setGameStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
-  const [winner, setWinner] = useState<Piece | null>(null);  
+  const [winner, setWinner] = useState<Piece | null>(null);
   const [selectedPiece, setSelectedPiece] = useState<Position | null>(null);
   const [validMoves, setValidMoves] = useState<Position[]>([]);
   const [animatingPiece, setAnimatingPiece] = useState<{ from: Position; to: Position; piece: Piece } | null>(null);
@@ -34,7 +34,7 @@ export const useGameBot = (difficulty: Difficulty) => {
   const [moveHistory, setMoveHistory] = useState<string[]>([]);
   const [elapsedTime, setElapsedTime] = useState(0);
   const startTimeRef = useRef<number>(Date.now());
-  
+
   const botService = useRef(new BotService());
   const { playMove, playCapture, playWin, playStart, toggleSound, soundEnabled } = useGameSounds();
 
@@ -63,38 +63,38 @@ export const useGameBot = (difficulty: Difficulty) => {
     setIsThinking(false);
     playStart();
   }, [playStart]);
-  
+
   useEffect(() => {
     startGame();
   }, []);
-  
+
   const executeMove = useCallback((from: Position, to: Position) => {
     const piece = board[from.row][from.col] as Piece;
     const isCapture = board[to.row][to.col] !== EMPTY_CELL;
-    
+
     setAnimatingPiece({ from, to, piece });
     setSelectedPiece(null);
-    setValidMoves([]);    
-    
+    setValidMoves([]);
+
     setTimeout(() => {
       // Som
-      if (isCapture) 
+      if (isCapture)
         playCapture();
-      else 
+      else
         playMove();
 
       // Atualiza Tabuleiro
       const newBoard = board.map(row => [...row]);
       newBoard[to.row][to.col] = piece;
       newBoard[from.row][from.col] = EMPTY_CELL;
-      
+
       setBoard(newBoard);
       setLastMove({ from, to });
       setAnimatingPiece(null);
-      
+
       const notation = GameModel.playNotation(from, to, isCapture);
       setMoveHistory(prev => [...prev, notation]);
-      
+
       const winnerCheck = GameModel.checkWinner(newBoard, currentPlayer);
       if (winnerCheck) {
         setWinner(winnerCheck);
@@ -102,9 +102,9 @@ export const useGameBot = (difficulty: Difficulty) => {
         playWin();
         return;
       }
-      
+
       const nextPlayer = currentPlayer === BLACK_PIECE ? WHITE_PIECE : BLACK_PIECE;
-            
+
       const hasValidMoves = GameModel.getAllValidMoves(newBoard, nextPlayer).length > 0;
       if (!hasValidMoves) {
         setWinner(currentPlayer);
@@ -118,23 +118,23 @@ export const useGameBot = (difficulty: Difficulty) => {
     }, ANIMATION_DELAY_MS);
   }, [board, currentPlayer, playCapture, playMove, playWin]);
 
-  
-  const onCellClick = (row: number, col: number) => {    
+
+  const onCellClick = (row: number, col: number) => {
     if (gameOver || currentPlayer !== BLACK_PIECE || animatingPiece || isThinking) return;
 
-    if (selectedPiece) {      
+    if (selectedPiece) {
       const isValidMove = validMoves.some(m => m.row === row && m.col === col);
       if (isValidMove) {
         executeMove(selectedPiece, { row, col });
-      } else {        
+      } else {
         setSelectedPiece(null);
-        setValidMoves([]);        
+        setValidMoves([]);
         if (board[row][col] === BLACK_PIECE) {
-            setSelectedPiece({ row, col });
-            setValidMoves(GameModel.getValidMoves(board, { row, col }, BLACK_PIECE));
+          setSelectedPiece({ row, col });
+          setValidMoves(GameModel.getValidMoves(board, { row, col }, BLACK_PIECE));
         }
       }
-    } else if (board[row][col] === BLACK_PIECE) {      
+    } else if (board[row][col] === BLACK_PIECE) {
       setSelectedPiece({ row, col });
       setValidMoves(GameModel.getValidMoves(board, { row, col }, BLACK_PIECE));
     }
@@ -143,13 +143,13 @@ export const useGameBot = (difficulty: Difficulty) => {
   useEffect(() => {
     const triggerBot = async () => {
       if (currentPlayer === WHITE_PIECE && !gameOver && !animatingPiece && gameStarted) {
-        
+
         const allMoves = GameModel.getAllValidMoves(board, WHITE_PIECE);
         if (allMoves.length === 0) {
-            setWinner(BLACK_PIECE);
-            setGameOver(true);
-            playWin();
-            return;
+          setWinner(BLACK_PIECE);
+          setGameOver(true);
+          playWin();
+          return;
         }
 
         setIsThinking(true);

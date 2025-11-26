@@ -1,5 +1,3 @@
-
-
 .lobby-chat-container {
   margin-top: 1rem;
   background: var(--light);
@@ -99,7 +97,6 @@
   color: var(--text);
 }
 
-
 .chat-input-area {
   display: flex;
   padding: 0.5rem;
@@ -140,7 +137,6 @@
   cursor: not-allowed;
 }
 
-
 .btn-join-chat {
   width: 100%;
   padding: 0.75rem;
@@ -162,7 +158,7 @@
 .btn-join-chat:hover {
   border-color: var(--primary);
   color: var(--primary);
-  background: rgba(0,0,0,0.02);
+  background: rgba(0, 0, 0, 0.02);
 }
 
 .chat-msg-item {
@@ -227,21 +223,20 @@
   padding: 0.25rem 0;
 }
 
-
-.chat-msg-item.own-message {  
-  flex-direction: row-reverse;   
-  align-self: flex-end; 
+.chat-msg-item.own-message {
+  flex-direction: row-reverse;
+  align-self: flex-end;
 }
 
-.chat-msg-item.own-message .msg-content-wrapper {  
-  text-align: right; 
+.chat-msg-item.own-message .msg-content-wrapper {
+  text-align: right;
 }
 
 .chat-msg-item.own-message .msg-user {
   color: var(--secondary);
 }
 
-.chat-msg-item.own-message .msg-text {  
-  color: var(--text); 
+.chat-msg-item.own-message .msg-text {
+  color: var(--text);
   opacity: 0.9;
 }

@@ -13,11 +13,9 @@ import { useState, useEffect, useRef } from "react";
 import { useAuth } from "./auth/AuthContext";
 import "./Header.css";
 
-
 interface HeaderProps {
   navigate: (page: PageType, data?: any) => void;
 }
-
 
 const Header = ({ navigate }: HeaderProps) => {
   const { user } = useAuth();

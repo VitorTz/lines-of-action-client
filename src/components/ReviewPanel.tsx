@@ -2,7 +2,6 @@ import { ChevronLeft, ChevronRight, SkipBack, SkipForward } from "lucide-react";
 import { useEffect, useRef } from "react";
 import type { Move } from "../types/game";
 
-
 interface ReviewProps {
   moves: Move[];
   currentIndex: number;
@@ -25,7 +24,7 @@ export function ReviewPanel({
   capturedBlack,
 }: ReviewProps) {
   const listRef = useRef<HTMLUListElement>(null);
-  
+
   useEffect(() => {
     if (!listRef.current) return;
     const item = listRef.current.querySelector(`[data-move="${currentIndex}"]`);
@@ -36,7 +35,7 @@ export function ReviewPanel({
       });
     }
   }, [currentIndex]);
-  
+
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
       if (e.key === "ArrowLeft") onPrev();
@@ -51,7 +50,6 @@ export function ReviewPanel({
 
   return (
     <div className="review-panel">
-      
       {/* Captures */}
       <div className="captures">
         <div className="cap-item">
@@ -66,10 +64,18 @@ export function ReviewPanel({
 
       {/* Controls */}
       <div className="controls">
-        <button onClick={onFirst} className="icon-btn"><SkipBack size={20} /></button>
-        <button onClick={onPrev} className="icon-btn"><ChevronLeft size={20} /></button>
-        <button onClick={onNext} className="icon-btn"><ChevronRight size={20} /></button>
-        <button onClick={onLast} className="icon-btn"><SkipForward size={20} /></button>
+        <button onClick={onFirst} className="icon-btn">
+          <SkipBack size={20} />
+        </button>
+        <button onClick={onPrev} className="icon-btn">
+          <ChevronLeft size={20} />
+        </button>
+        <button onClick={onNext} className="icon-btn">
+          <ChevronRight size={20} />
+        </button>
+        <button onClick={onLast} className="icon-btn">
+          <SkipForward size={20} />
+        </button>
       </div>
 
       {/* Move List */}
@@ -85,9 +91,7 @@ export function ReviewPanel({
             <div className="move-text">
               ({m.from.row}, {m.from.col}) → ({m.to.row}, {m.to.col})
               {m.captured && (
-                <span className="capture-tag">
-                  x {m.captured}
-                </span>
+                <span className="capture-tag">x {m.captured}</span>
               )}
             </div>
 

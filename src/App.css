@@ -1,5 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
-
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 
 * {
   margin: 0;
@@ -8,16 +7,16 @@
 }
 
 :root {
-  --primary: #DC0E0E;
-  --secondary: #E62727;
-  --accent: #F4A261;
-  --dark: #2B2118;
-  --light: #FFF4ED;
-  --text: #3A2E26;
-  --text-light: #8C7A6B;
-  --bg: #FFFAF7;
-  --card-bg: #FFFFFF;
-  --border: #F0E5DD;
+  --primary: #dc0e0e;
+  --secondary: #e62727;
+  --accent: #f4a261;
+  --dark: #2b2118;
+  --light: #fff4ed;
+  --text: #3a2e26;
+  --text-light: #8c7a6b;
+  --bg: #fffaf7;
+  --card-bg: #ffffff;
+  --border: #f0e5dd;
   --shadow-sm: 0 2px 8px rgba(232, 116, 79, 0.08);
   --shadow-md: 0 4px 16px rgba(232, 116, 79, 0.12);
   --shadow-lg: 0 8px 32px rgba(232, 116, 79, 0.16);
@@ -25,9 +24,10 @@
 }
 
 body {
-  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    system-ui, sans-serif;
   background: var(--bg);
-  color: var(--text);  
+  color: var(--text);
   min-height: 100vh;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -53,7 +53,6 @@ body {
   background-color: #111111;
 }
 
-
 .main-content {
   flex: 1;
   max-width: 1400px;
@@ -70,20 +69,16 @@ body {
   padding: 0rem 0rem;
 }
 
-
 @media (min-width: 768px) {
-  
   .menu-toggle.mobile {
     display: none;
   }
-
 }
 
 @media (max-width: 768px) {
   .main-content {
     padding: 1.5rem 1rem;
   }
-  
 }
 
 /* Scrollbar */
@@ -106,7 +101,6 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--secondary);
 }
-
 
 @media (prefers-reduced-motion: no-preference) {
   * {

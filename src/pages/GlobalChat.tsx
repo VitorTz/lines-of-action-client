@@ -3,7 +3,10 @@ import { Send, Users, Circle } from "lucide-react";
 import type { PageType } from "../types/general";
 import { useAuth } from "../components/auth/AuthContext";
 import "./GlobalChat.css";
-import { type GlobalChatMessage, useGlobalChat } from "../context/GlobalChatContext";
+import {
+  type GlobalChatMessage,
+  useGlobalChat,
+} from "../context/GlobalChatContext";
 import { useSocket } from "../socket/useSocket";
 
 interface User {
@@ -18,18 +21,16 @@ interface GlobalChatProps {
   navigate: (page: PageType, data?: any) => void;
 }
 
-
 const GlobalChatPage = ({ navigate }: GlobalChatProps) => {
-  
   const { user } = useAuth();
   const { messages, addMessage } = useGlobalChat();
   const [inputText, setInputText] = useState("");
   const [onlineUsers, setOnlineUsers] = useState<User[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  
-  const socket = useSocket()
-  
-  const isConnected = true
+
+  const socket = useSocket();
+
+  const isConnected = true;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -38,7 +39,7 @@ const GlobalChatPage = ({ navigate }: GlobalChatProps) => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-  
+
   useEffect(() => {
     socket.emit("join-global-chat", {
       userId: user!.id || `user_${Date.now()}`,
@@ -57,10 +58,10 @@ const GlobalChatPage = ({ navigate }: GlobalChatProps) => {
     });
 
     return () => {
-      socket.off("global-chat-message")
-      socket.off("global-chat-users-list")
-    }
-  }, [])
+      socket.off("global-chat-message");
+      socket.off("global-chat-users-list");
+    };
+  }, []);
 
   const handleSendMessage = () => {
     if (!inputText.trim()) return;
@@ -70,12 +71,12 @@ const GlobalChatPage = ({ navigate }: GlobalChatProps) => {
       userId: user!.id || "unknown",
       username: user!.username,
       timestamp: Date.now(),
-      avatarUrl: user?.perfilImageUrl
+      avatarUrl: user?.perfilImageUrl,
     };
 
     // Emite o evento para o backend
-    socket.emit("send-global-chat-message", messageData);    
-    
+    socket.emit("send-global-chat-message", messageData);
+
     setInputText("");
   };
 
@@ -109,7 +110,13 @@ const GlobalChatPage = ({ navigate }: GlobalChatProps) => {
           {onlineUsers.map((u) => (
             <div key={u.id} className="userItem">
               {u.avatarUrl ? (
-                  <img src={u.avatarUrl} width={32} height={32} style={{borderRadius: 32}} alt="avatar" />                
+                <img
+                  src={u.avatarUrl}
+                  width={32}
+                  height={32}
+                  style={{ borderRadius: 32 }}
+                  alt="avatar"
+                />
               ) : (
                 <div className="userAvatar">
                   {u.username.charAt(0).toUpperCase()}
@@ -161,7 +168,7 @@ const GlobalChatPage = ({ navigate }: GlobalChatProps) => {
         {/* Messages */}
         <div className="messagesContainer">
           {messages.map((msg) => {
-            const isOwnMessage = msg.userId === user?.id; 
+            const isOwnMessage = msg.userId === user?.id;
             const isSystemMessage = msg.userId === "system";
 
             if (isSystemMessage) {
@@ -181,7 +188,12 @@ const GlobalChatPage = ({ navigate }: GlobalChatProps) => {
               >
                 <div className="messageAvatar">
                   {msg.avatarUrl ? (
-                     <img src={msg.avatarUrl} className="userAvatarImg" alt="" style={{width: 32, height: 32, borderRadius: '50%'}} />
+                    <img
+                      src={msg.avatarUrl}
+                      className="userAvatarImg"
+                      alt=""
+                      style={{ width: 32, height: 32, borderRadius: "50%" }}
+                    />
                   ) : (
                     msg.username.charAt(0).toUpperCase()
                   )}

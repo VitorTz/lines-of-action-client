@@ -1,11 +1,9 @@
-
 .container {
   color: #3a2e26;
 }
 
-
 .game-header {
-  padding: 1rem;  
+  padding: 1rem;
   text-align: center;
   margin-bottom: 12px;
 }
@@ -117,7 +115,7 @@
 .board {
   display: inline-block;
   border: 3px solid #2b2118;
-  box-shadow: 0 8px 32px rgba(232, 116, 79, 0.16);  
+  box-shadow: 0 8px 32px rgba(232, 116, 79, 0.16);
 }
 
 .row {

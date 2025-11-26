@@ -8,7 +8,6 @@ export interface MatchData {
 }
 
 interface LobbyContextValue {
-
   numPlayersOnQueue: number;
   setNumPlayersOnQueue: (v: number) => void;
 
@@ -25,14 +24,12 @@ interface LobbyContextValue {
 const LobbyContext = createContext<LobbyContextValue | undefined>(undefined);
 
 export function LobbyProvider({ children }: { children: ReactNode }) {
-  
   const [numPlayersOnQueue, setNumPlayersOnQueue] = useState(0);
   const [onQueue, setOnQueue] = useState(false);
   const [timeOnQueue, setTimeOnQueue] = useState("");
   const [matchData, setMatchData] = useState<MatchData | null>(null);
 
   const value: LobbyContextValue = {
- 
     numPlayersOnQueue,
     setNumPlayersOnQueue,
 

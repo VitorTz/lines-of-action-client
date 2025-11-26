@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { 
-  type Board, 
-  type Position, 
-  type Piece, 
-  BLACK_PIECE, 
-  WHITE_PIECE, 
-  EMPTY_CELL 
+import {
+  type Board,
+  type Position,
+  type Piece,
+  BLACK_PIECE,
+  WHITE_PIECE,
+  EMPTY_CELL
 } from "../types/game";
 import { useSocket } from "../socket/useSocket";
 import { useAuth } from "../components/auth/AuthContext";
@@ -22,11 +22,11 @@ const INITIAL_BOARD = generateNewGameBoard();
 
 
 export const useMultiplayerGame = (
-  gameId: string, 
-  myColor: string, 
+  gameId: string,
+  myColor: string,
   navigate: (page: PageType, data?: any) => void
 ) => {
-  
+
   const socket = useSocket();
   const { user } = useAuth();
   const { setIsPlaying, setGameId } = useGlobal()
@@ -42,7 +42,7 @@ export const useMultiplayerGame = (
   const [opponentName, setOpponentName] = useState<string>("Oponente");
   const [winner, setWinner] = useState<string | null>(null);
   const [gameOver, setGameOver] = useState(false);
-  
+
   // UI / Animação
   const [selectedPiece, setSelectedPiece] = useState<Position | null>(null);
   const [validMoves, setValidMoves] = useState<Position[]>([]);
@@ -67,7 +67,7 @@ export const useMultiplayerGame = (
       return () => clearInterval(timer);
     }
   }, [gameOver, gameStarted]);
-  
+
   useEffect(() => {
     if (user) {
       socket.emit("join-game", { gameId, playerId: user.id });
@@ -87,13 +87,13 @@ export const useMultiplayerGame = (
 
     const handleMoveMade = (data: any) => {
       const { from, to, captured, player, board: newBoard, turn } = data;
-            
+
       const pieceMoving = player === 'black' ? BLACK_PIECE : WHITE_PIECE;
-      
-      // 1. Inicia animação
+
+      // Inicia animação
       setAnimatingPiece({ from, to, piece: pieceMoving });
 
-      // 2. Consolida o movimento após delay da animação (300ms)
+      // Consolida o movimento após delay da animação (300ms)
       setTimeout(() => {
         setBoard(newBoard);
         setCurrentPlayer(turn === "black" ? BLACK_PIECE : WHITE_PIECE);
@@ -134,10 +134,10 @@ export const useMultiplayerGame = (
     const handleOpponentDisconnected = () => {
       setIsPlaying(false)
       setGameId(null)
-      addNotification({ 
-        title: "Oponente Desconectado", 
-        message: "Seu oponente se desconectou da partida", 
-        type: "warning" 
+      addNotification({
+        title: "Oponente Desconectado",
+        message: "Seu oponente se desconectou da partida",
+        type: "warning"
       });
     };
 
@@ -150,7 +150,7 @@ export const useMultiplayerGame = (
       socket.off("game-state");
       socket.off("move-made");
       socket.off("game-over");
-      socket.off("opponent-disconnected-game");      
+      socket.off("opponent-disconnected-game");
       clearMessages();
     };
   }, [gameId, user, myColor, socket]);
@@ -162,12 +162,12 @@ export const useMultiplayerGame = (
       const isValidMove = validMoves.some((m) => m.row === row && m.col === col);
       if (isValidMove) {
         const captured = board[row][col] !== EMPTY_CELL;
-        socket.emit("make-move", { 
-            gameId, 
-            playerId: user?.id, 
-            from: selectedPiece, 
-            to: { row, col }, 
-            captured 
+        socket.emit("make-move", {
+          gameId,
+          playerId: user?.id,
+          from: selectedPiece,
+          to: { row, col },
+          captured
         });
         setSelectedPiece(null);
         setValidMoves([]);
@@ -175,8 +175,8 @@ export const useMultiplayerGame = (
         setSelectedPiece(null);
         setValidMoves([]);
         if (board[row][col] === myPiece) {
-             setSelectedPiece({ row, col });
-             setValidMoves(GameModel.getValidMoves(board, { row, col }, myPiece));
+          setSelectedPiece({ row, col });
+          setValidMoves(GameModel.getValidMoves(board, { row, col }, myPiece));
         }
       }
     } else if (board[row][col] === myPiece) {
@@ -198,8 +198,7 @@ export const useMultiplayerGame = (
       navigate("lobby")
     }, [navigate]
   );
-  
-  // Nova Action para Replay
+
   const viewReplay = useCallback(() => navigate("game-review", gameId), [navigate, gameId]);
 
   return {

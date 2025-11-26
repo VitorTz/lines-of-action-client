@@ -124,11 +124,11 @@ export class GameModel {
 
     static countPieces(board: Board, piece: Piece): number {
         let count = 0;
-        board.forEach((row: number[]) => row.forEach(col => {if (col === piece) count++ }))
+        board.forEach((row: number[]) => row.forEach(col => { if (col === piece) count++ }))
         return count
     }
 
-    static positionToNotation(pos: Position): string  {
+    static positionToNotation(pos: Position): string {
         return `${GameModel.COLUMNS[pos.col]}${8 - pos.row}`;
     }
 

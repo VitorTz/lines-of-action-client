@@ -9,7 +9,7 @@ import {
   type Board,
 } from "../types/game";
 import "./GameVsBot.css";
-import './GameReview.css'
+import "./GameReview.css";
 import type { PageType } from "../types/general";
 import { useNotification } from "../components/notification/NotificationContext";
 
@@ -25,7 +25,7 @@ import {
   Trophy,
   Calendar,
   MapPin,
-  Clock  
+  Clock,
 } from "lucide-react";
 
 interface GameReviewProps {
@@ -36,7 +36,6 @@ interface GameReviewProps {
 const INITIAL_BOARD: Board = generateNewGameBoard();
 
 const GameReview = ({ navigate, gameId }: GameReviewProps) => {
-  
   const [gameHistory, setGameHistory] = useState<GameHistory | null>(null);
   const [board, setBoard] = useState<Board>(INITIAL_BOARD);
   const [currentMoveIndex, setCurrentMoveIndex] = useState(0);
@@ -49,7 +48,6 @@ const GameReview = ({ navigate, gameId }: GameReviewProps) => {
 
   const columns = ["a", "b", "c", "d", "e", "f", "g", "h"];
 
-  // Load match history
   useEffect(() => {
     const init = async () => {
       try {
@@ -65,7 +63,7 @@ const GameReview = ({ navigate, gameId }: GameReviewProps) => {
       }
     };
     init();
-  }, [gameId]); // Adicionado gameId na dep
+  }, [gameId]);
 
   const updatePieceCounts = (b: Board, moves: Move[]) => {
     let black = 0;
@@ -146,32 +144,48 @@ const GameReview = ({ navigate, gameId }: GameReviewProps) => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR', {
-      day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+    return new Date(dateString).toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   if (!gameHistory) return <div>Loading...</div>;
 
-  const isWhiteWinner = (gameHistory.winner as any)._id === (gameHistory.playerWhite as any)._id;
-  const isBlackWinner = (gameHistory.winner as any)._id === (gameHistory.playerBlack as any)._id;
+  const isWhiteWinner =
+    (gameHistory.winner as any)._id === (gameHistory.playerWhite as any)._id;
+  const isBlackWinner =
+    (gameHistory.winner as any)._id === (gameHistory.playerBlack as any)._id;
 
   return (
     <div className="container">
-      {/* HEADER COM DETALHES DA PARTIDA */}
       <div className="match-header-card">
-        
         {/* Jogador Branco */}
-        <div className={`player-info ${isWhiteWinner ? 'winner-card' : ''}`}>
+        <div className={`player-info ${isWhiteWinner ? "winner-card" : ""}`}>
           <div className="avatar-wrapper">
-             <img src={gameHistory.playerWhite.perfilImageUrl} alt="White" className="player-avatar" />
-             <div className="piece-indicator white-indicator"><Circle size={12}/></div>
+            <img
+              src={gameHistory.playerWhite.perfilImageUrl}
+              alt="White"
+              className="player-avatar"
+            />
+            <div className="piece-indicator white-indicator">
+              <Circle size={12} />
+            </div>
           </div>
           <div className="player-details">
-            <span className="player-name">{gameHistory.playerWhite.username}</span>
+            <span className="player-name">
+              {gameHistory.playerWhite.username}
+            </span>
             <div className="player-meta">
-              <span className="rank-badge">Rank {gameHistory.playerWhite.rank}</span>
-              <span className="location"><MapPin size={10}/> {gameHistory.playerWhite.address.city}</span>
+              <span className="rank-badge">
+                Rank {gameHistory.playerWhite.rank}
+              </span>
+              <span className="location">
+                <MapPin size={10} /> {gameHistory.playerWhite.address.city}
+              </span>
             </div>
           </div>
           {isWhiteWinner && <Trophy className="trophy-icon" size={20} />}
@@ -185,33 +199,50 @@ const GameReview = ({ navigate, gameId }: GameReviewProps) => {
             {formatDate(gameHistory.gameCreatedAt as any)}
           </div>
           <div className="match-moves-count">
-             <Clock size={14} /> {gameHistory.gameMoves.length} lances
+            <Clock size={14} /> {gameHistory.gameMoves.length} lances
           </div>
         </div>
 
         {/* Jogador Preto */}
-        <div className={`player-info ${isBlackWinner ? 'winner-card' : ''}`} style={{justifyContent: 'flex-end', textAlign: 'right'}}>
+        <div
+          className={`player-info ${isBlackWinner ? "winner-card" : ""}`}
+          style={{ justifyContent: "flex-end", textAlign: "right" }}
+        >
           <div className="avatar-wrapper">
-             <img src={gameHistory.playerBlack.perfilImageUrl} alt="Black" className="player-avatar" />
-             <div className="piece-indicator black-indicator"><CircleDot size={12} color="#fff"/></div>
+            <img
+              src={gameHistory.playerBlack.perfilImageUrl}
+              alt="Black"
+              className="player-avatar"
+            />
+            <div className="piece-indicator black-indicator">
+              <CircleDot size={12} color="#fff" />
+            </div>
           </div>
           <div className="player-details">
             <div>
               {isBlackWinner && <Trophy className="trophy-icon" size={20} />}
-              <span className="player-name">{gameHistory.playerBlack.username}</span>
+              <span className="player-name">
+                {gameHistory.playerBlack.username}
+              </span>
             </div>
-            <div className="player-meta" style={{justifyContent: 'flex-end'}}>
-               <span className="location">{gameHistory.playerBlack.address.city} <MapPin size={10}/></span>
-               <span className="rank-badge">Rank {gameHistory.playerBlack.rank}</span>
+            <div className="player-meta" style={{ justifyContent: "flex-end" }}>
+              <span className="location">
+                {gameHistory.playerBlack.address.city} <MapPin size={10} />
+              </span>
+              <span className="rank-badge">
+                Rank {gameHistory.playerBlack.rank}
+              </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ÁREA DO JOGO (Existente) */}
       <div className="game-container">
         {/* BOARD */}
-        <div className="board-wrapper" style={{backgroundColor: 'transparent'}}>
+        <div
+          className="board-wrapper"
+          style={{ backgroundColor: "transparent" }}
+        >
           <div className="column-labels">
             {columns.map((col, idx) => (
               <div key={idx} className="label">
@@ -262,7 +293,7 @@ const GameReview = ({ navigate, gameId }: GameReviewProps) => {
               ))}
             </div>
           </div>
-          
+
           <div
             style={{
               marginTop: 20,
@@ -282,14 +313,12 @@ const GameReview = ({ navigate, gameId }: GameReviewProps) => {
                 <Circle size={18} />
                 {whiteCount} peças
               </div>
-
             </div>
           </div>
         </div>
 
-        {/* SIDEBAR */}
-        <div className="sidebar">          
-
+        {/* Sidebar */}
+        <div className="sidebar">
           <div className="history-list">
             {gameHistory.gameMoves.map((m: any, i: number) => {
               const from = `${columns[m.from.col]}${8 - m.from.row}`;

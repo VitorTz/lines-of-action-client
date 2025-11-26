@@ -38,8 +38,13 @@ const CloseIcon = () => (
   </svg>
 );
 
-// Componente de Notificação Individual
-const NotificationItem: React.FC<{ notification: Notification }> = ({ notification }) => {
+
+interface NotificationItemProps {
+  notification: Notification
+}
+
+
+const NotificationItem = ({ notification }: NotificationItemProps) => {
   
     const { removeNotification } = useNotification();
   const [isExiting, setIsExiting] = useState(false);

@@ -1,13 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import { useSocket } from "../socket/useSocket";
 import { Send, MessageSquare } from "lucide-react";
-import "./GameChat.css";
 import { useGameChat } from "../context/GameChatContext";
+import "./GameChat.css";
+
 
 interface GameChatProps {
   gameId: string;
   playerId: string;
 }
+
 
 interface ChatMessage {
   senderId: string;
@@ -15,9 +17,8 @@ interface ChatMessage {
   timestamp: number;
 }
 
-const GameChat = ({ gameId, playerId }: GameChatProps) => {
 
-  console.log("gameChat", gameId, playerId)
+const GameChat = ({ gameId, playerId }: GameChatProps) => {
 
   const socket = useSocket();
   const { messages, addMessage } = useGameChat();

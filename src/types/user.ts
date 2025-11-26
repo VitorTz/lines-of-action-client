@@ -18,7 +18,7 @@ export interface User {
   age: number
   address: Address
   rank: number
-  
+
 }
 
 

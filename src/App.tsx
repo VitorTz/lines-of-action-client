@@ -13,37 +13,30 @@ import { GameChatProvider } from "./context/GameChatContext";
 import { GlobalChatProvider } from "./context/GlobalChatContext";
 import { GlobalProvider } from "./context/GlobalContext";
 
-
 const AppContent = () => {
-
-  const socket = useSocket()
-  const { addNotification } = useNotification()
+  const socket = useSocket();
+  const { addNotification } = useNotification();
   const { loading } = useAuth();
 
   useEffect(() => {
-    
-    socket.on('error', (data) => {
+    socket.on("error", (data) => {
       addNotification({
         title: data.message,
-        type: "error"
-      })
-    })
+        type: "error",
+      });
+    });
 
-    socket.on('info', (data) => {
+    socket.on("info", (data) => {
       addNotification({
         title: data.message,
-        type: "info"
-      })
-    })
+        type: "info",
+      });
+    });
+  }, []);
 
-  }, [])
+  if (loading) return <LoadingPage />;
 
-  if (loading) 
-    return <LoadingPage />;
-
-  return (
-    <Router />
-  );
+  return <Router />;
 };
 
 const App = () => {

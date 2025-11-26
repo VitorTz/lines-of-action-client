@@ -6,12 +6,10 @@ interface ProfileImagePickerProps {
   onChange: (val: File | null) => void;
 }
 
-
 const ProfileImagePicker = ({ value, onChange }: ProfileImagePickerProps) => {
-  
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  
+
   useEffect(() => {
     if (!value) {
       setPreviewUrl(null);
@@ -37,7 +35,7 @@ const ProfileImagePicker = ({ value, onChange }: ProfileImagePickerProps) => {
           <div className="profile-img-placeholder">Sem imagem</div>
         )}
       </div>
-      
+
       <input
         ref={fileInputRef}
         type="file"
@@ -59,7 +57,7 @@ const ProfileImagePicker = ({ value, onChange }: ProfileImagePickerProps) => {
           </button>
         </label>
       </div>
-      
+
       <input
         type="file"
         accept="image/*"

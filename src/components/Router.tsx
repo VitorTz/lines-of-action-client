@@ -22,8 +22,6 @@ const Router = () => {
   const { user } = useAuth();
   const [currentPage, setCurrentPage] = useState<PageType>("lobby");
   const [pageData, setPageData] = useState<any>(null);
-  
-  // Novos estados para controlar o Modal de Saída
   const { isPlaying, setIsPlaying, gameId, setGameId } = useGlobal();
   const [showExitModal, setShowExitModal] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<{
@@ -82,8 +80,6 @@ const Router = () => {
     );
 
     const handlePop = (e: PopStateEvent) => {
-      // Nota: Interceptar o botão "Voltar" do navegador é complexo.
-      // Aqui focamos na navegação interna via função 'navigate'.
       if (e.state && e.state.page) {
         setCurrentPage(e.state.page);
         setPageData(e.state.data ?? null);
@@ -115,7 +111,6 @@ const Router = () => {
     };
   }, []);
 
-  // Separei a lógica de mudar a URL/Estado para poder reutilizá-la
   const performNavigation = (page: PageType, data: any) => {
     setCurrentPage(page);
     setPageData(data);
@@ -138,9 +133,7 @@ const Router = () => {
     );
   };
 
-  // Função navigate modificada para interceptar se estiver jogando
   const navigate = (page: PageType, data: any = null) => {
-    // Se o usuário tenta navegar para a mesma página, ignora
     if (page === currentPage) return;
 
     if (isPlaying) {
@@ -152,10 +145,8 @@ const Router = () => {
   };
 
   const handleConfirmExit = () => {
-    handleExitGame(); // Executa a rendição
-    setShowExitModal(false); // Fecha o modal
-    
-    // Prossegue para a página que o usuário queria ir
+    handleExitGame();
+    setShowExitModal(false);
     if (pendingNavigation) {
       performNavigation(pendingNavigation.page, pendingNavigation.data);
       setPendingNavigation(null);
@@ -217,7 +208,6 @@ const Router = () => {
       <main className="main-content">{renderPage()}</main>
       <Footer />
 
-      {/* MODAL DE CONFIRMAÇÃO DE SAÍDA */}
       {showExitModal && (
         <div
           style={{
@@ -226,7 +216,7 @@ const Router = () => {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: "rgba(43, 33, 24, 0.6)", // --dark com opacidade
+            backgroundColor: "rgba(43, 33, 24, 0.6)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",

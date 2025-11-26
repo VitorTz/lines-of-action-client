@@ -25,7 +25,6 @@
   margin-top: 4px;
 }
 
-/* --- Filtros --- */
 .filters-card {
   background: var(--card-bg);
   padding: 20px;
@@ -104,7 +103,7 @@
   cursor: not-allowed;
 }
 
-/* --- Lista de Cards --- */
+
 .rank-list {
   display: flex;
   flex-direction: column;
@@ -182,7 +181,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  background: rgba(255, 193, 7, 0.15); /* Cor dourada suave */
+  background: rgba(255, 193, 7, 0.15);
   color: #d97706;
   padding: 4px 10px;
   border-radius: 20px;
@@ -205,7 +204,7 @@
 }
 
 .detail-item svg {
-  color: var(--text-light); /* ou var(--primary) para mais destaque */
+  color: var(--text-light);
   opacity: 0.7;
 }
 

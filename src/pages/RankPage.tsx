@@ -4,21 +4,20 @@ import type { User } from "../types/user";
 import { linesApi } from "../api/linesApi";
 import "./RankPage.css";
 import type { PageType } from "../types/general";
-import { 
-  MapPin, 
-  Calendar, 
-  Mail, 
-  Trophy, 
+import {
+  MapPin,
+  Calendar,
+  Mail,
+  Trophy,
   User as UserIcon,
-  Filter
+  Filter,
 } from "lucide-react";
 
 interface RankPageProps {
-    navigate: (page: PageType, data?: any) => void
+  navigate: (page: PageType, data?: any) => void;
 }
 
 const RankPage = ({ navigate }: RankPageProps) => {
-  
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState<UserRankQuery>({
@@ -39,36 +38,33 @@ const RankPage = ({ navigate }: RankPageProps) => {
 
   useEffect(() => {
     load();
-  }, []); // Se quiser recarregar ao mudar filtro automaticamente, adicione [filters] aqui (cuidado com loop)
+  }, []);
 
   function update<K extends keyof UserRankQuery>(key: K, value: any) {
     setFilters((prev) => ({ ...prev, [key]: value }));
   }
 
-  // Helper para formatar data
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
+    return new Date(dateString).toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
     });
   };
 
   return (
     <div className="metrics-page">
       <div className="metrics-container">
-        
         <header className="page-header">
-           <h1 className="title">Ranking Global</h1>
+          <h1 className="title">Ranking Global</h1>
         </header>
 
-        {/* Área de Filtros Melhorada */}
         <div className="filters-card">
           <div className="filters-header">
             <Filter size={18} />
             <span>Filtros de Busca</span>
           </div>
-          
+
           <div className="filters-grid">
             <div className="filter-group">
               <label>Ordenar por</label>
@@ -101,8 +97,8 @@ const RankPage = ({ navigate }: RankPageProps) => {
                 onChange={(e) => update("minRank", Number(e.target.value))}
               />
             </div>
-            
-             <div className="filter-group">
+
+            <div className="filter-group">
               <label>Limite</label>
               <input
                 type="number"
@@ -117,20 +113,18 @@ const RankPage = ({ navigate }: RankPageProps) => {
           </button>
         </div>
 
-        {/* Lista de Usuários Detalhada */}
         <div className="rank-list">
           {users.map((u, index) => (
             <div key={u.id} className="rank-card">
-              
-              {/* Coluna 1: Rank Badge */}
-              <div className="rank-position">
-                 #{index + 1}
-              </div>
+              <div className="rank-position">#{index + 1}</div>
 
-              {/* Coluna 2: Avatar */}
               <div className="user-avatar-container">
                 {u.perfilImageUrl ? (
-                  <img src={u.perfilImageUrl} alt={u.username} className="user-avatar" />
+                  <img
+                    src={u.perfilImageUrl}
+                    alt={u.username}
+                    className="user-avatar"
+                  />
                 ) : (
                   <div className="user-avatar-placeholder">
                     {u.username.substring(0, 2).toUpperCase()}
@@ -138,7 +132,6 @@ const RankPage = ({ navigate }: RankPageProps) => {
                 )}
               </div>
 
-              {/* Coluna 3: Informações Principais */}
               <div className="user-main-info">
                 <div className="user-header">
                   <span className="username">{u.username}</span>
@@ -148,7 +141,6 @@ const RankPage = ({ navigate }: RankPageProps) => {
                 </div>
 
                 <div className="user-details-grid">
-                  
                   <div className="detail-item" title="Email">
                     <Mail size={14} />
                     <span>{u.email}</span>
@@ -170,19 +162,20 @@ const RankPage = ({ navigate }: RankPageProps) => {
                     <Calendar size={14} />
                     <span>Membro desde {formatDate(u.createdAt)}</span>
                   </div>
-
                 </div>
               </div>
             </div>
           ))}
-          
+
           {users.length === 0 && !loading && (
-             <div className="empty-state">Nenhum usuário encontrado com estes filtros.</div>
+            <div className="empty-state">
+              Nenhum usuário encontrado com estes filtros.
+            </div>
           )}
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default RankPage;

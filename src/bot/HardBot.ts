@@ -137,7 +137,7 @@ export class HardBot extends BotPlayer {
                 beta = Math.min(beta, bestVal);
             }
 
-            if (beta <= alpha) break; // Poda
+            if (beta <= alpha) break;
         }
         
         let flag: 'EXACT' | 'LOWERBOUND' | 'UPPERBOUND' = 'EXACT';
@@ -273,7 +273,6 @@ export class HardBot extends BotPlayer {
 
         let connectedCount = 0;
         const stack: Position[] = [startNode];
-        // Usar matriz booleana é mais rápido que Set de strings para visitados
         const visited: boolean[][] = Array(8).fill(false).map(() => Array(8).fill(false));
         visited[startNode.row][startNode.col] = true;
         connectedCount++;
