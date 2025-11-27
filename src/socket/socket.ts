@@ -21,6 +21,7 @@ let socket: Socket | null = null;
 
 // }
 
+// production
 export function getSocket() {
   if (!socket) {
     socket = io("/", {

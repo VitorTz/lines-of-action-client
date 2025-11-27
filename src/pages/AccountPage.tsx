@@ -318,7 +318,7 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
               <>
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="btn btn-primary"
+                  className="btn"
                 >
                   Editar perfil
                 </button>
@@ -332,7 +332,7 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
                 <button
                   onClick={handleUpdateProfile}
                   disabled={loading}
-                  className="btn btn-success"
+                  className="btn"
                 >
                   {loading ? (
                     <>
@@ -349,7 +349,7 @@ const AccountPage = ({ navigate }: AccountPageProps) => {
                 <button
                   onClick={handleCancelEdit}
                   disabled={loading}
-                  className="btn btn-secondary"
+                  className="btn btn-danger"
                 >
                   <X size={18} />
                   Cancelar

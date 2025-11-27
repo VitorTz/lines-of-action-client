@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, use } from "react";
 import {
   type Board,
   type Position,
@@ -68,10 +68,15 @@ export const useMultiplayerGame = (
     }
   }, [gameOver, gameStarted]);
 
-  useEffect(() => {
-    if (user) {
-      socket.emit("join-game", { gameId, playerId: user.id });
+  const handleReconnection = () => {
+    if (user && gameId) {
+      console.log("Socket conectado... Entrando na sala do jogo...");
+      socket.emit('join-game', { gameId: gameId, playerId: user.id });
     }
+  };
+
+  useEffect(() => {    
+    handleReconnection()
     setIsPlaying(true)
     setGameId(gameId)
     clearMessages();
@@ -86,7 +91,7 @@ export const useMultiplayerGame = (
     };
 
     const handleMoveMade = (data: any) => {
-      const { from, to, captured, player, board: newBoard, turn } = data;
+      const { from, to, captured, player, board: newBoard, turn } = data;      
 
       const pieceMoving = player === 'black' ? BLACK_PIECE : WHITE_PIECE;
 
@@ -141,6 +146,7 @@ export const useMultiplayerGame = (
       });
     };
 
+    socket.on("connect", handleReconnection);
     socket.on("game-state", handleGameState);
     socket.on("move-made", handleMoveMade);
     socket.on("game-over", handleGameOverEvent);
@@ -151,6 +157,7 @@ export const useMultiplayerGame = (
       socket.off("move-made");
       socket.off("game-over");
       socket.off("opponent-disconnected-game");
+      socket.off("connect", handleReconnection);
       clearMessages();
     };
   }, [gameId, user, myColor, socket]);
@@ -187,9 +194,7 @@ export const useMultiplayerGame = (
 
   const handleSurrender = useCallback(() => {
     if (!user) return;
-    if (window.confirm("Tem certeza que deseja desistir?")) {
-      socket.emit("surrender", { gameId, playerId: user.id });
-    }
+    socket.emit("surrender", { gameId, playerId: user.id });
   }, [user, gameId, socket]);
 
   const exitGame = useCallback(

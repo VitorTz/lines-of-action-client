@@ -235,6 +235,7 @@
 
 .btn {
   padding: 0.875rem 1.5rem;
+  background-color: var(--primary);
   border: none;
   border-radius: var(--border-radius);
   font-weight: 600;
@@ -243,6 +244,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  height: 52px;
   gap: 0.5rem;
   transition: all 0.2s;
   font-family: inherit;

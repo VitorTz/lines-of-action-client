@@ -38,6 +38,9 @@ export function SocketProvider({ children }: Props) {
 
     return () => {
       cleanupHeartbeat();
+      socket.off('connect')
+      socket.off('disconnect')
+      socket.off('reconnect_attempt')
       socket.disconnect();
     };
   }, [socket]);

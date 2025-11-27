@@ -36,7 +36,7 @@ const LobbyPage = ({ navigate }: LobbyPageProps) => {
       timerRef.current = null;
     }
   };
-
+  
   useEffect(() => {
     if (matchData && !matchAcceptedRef.current) {
       setShowMatchModal(true);

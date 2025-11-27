@@ -17,6 +17,9 @@ import GameVsPlayer from "../pages/GameVsPlayer";
 import GameReview from "../pages/GameReview";
 import { useGlobal } from "../context/GlobalContext";
 import { useSocket } from "../socket/useSocket";
+import { X, AlertTriangle, LogOut } from "lucide-react"; 
+import './Router.css'
+
 
 const Router = () => {
   const { user } = useAuth();
@@ -208,81 +211,46 @@ const Router = () => {
       <main className="main-content">{renderPage()}</main>
       <Footer />
 
+      {/* MODAL DE SAÍDA GLOBAL */}
       {showExitModal && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(43, 33, 24, 0.6)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 9999,
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: "var(--card-bg)",
-              padding: "2rem",
-              borderRadius: "var(--border-radius)",
-              boxShadow: "var(--shadow-lg)",
-              maxWidth: "400px",
-              width: "90%",
-              textAlign: "center",
-              border: "1px solid var(--border)",
-            }}
-          >
-            <h3
-              style={{
-                color: "var(--primary)",
-                marginTop: 0,
-                fontSize: "1.5rem",
-              }}
+        <div className="modal-overlay">
+          <div className="game-over-card">
+            
+            {/* Botão X para fechar */}
+            <button
+              className="modal-close-btn"
+              onClick={handleCancelExit}
+              title="Cancelar"
             >
-              Partida em Andamento
-            </h3>
-            <p style={{ color: "var(--text)", marginBottom: "1.5rem" }}>
+              <X size={24} />
+            </button>
+
+            {/* Ícone de Alerta */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
+              <AlertTriangle size={48} color="#ef4444" />
+            </div>
+
+            <h2>Partida em Andamento</h2>
+            <p>
               Você está atualmente em uma partida. Se sair agora, você
               automaticamente <strong>abandonará o jogo</strong> (desistência).
             </p>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                gap: "1rem",
-              }}
-            >
+
+            <div className="modal-actions">
+              {/* Botão de Ação Principal (Perigo/Abandonar) */}
               <button
+                className="modal-btn btn-primary"
+                onClick={handleConfirmExit}
+              >
+                <LogOut size={18} /> Abandonar e Sair
+              </button>
+
+              {/* Botão de Cancelar (Secundário) */}
+              <button
+                className="modal-btn btn-secondary"
                 onClick={handleCancelExit}
-                style={{
-                  backgroundColor: "transparent",
-                  color: "var(--text-light)",
-                  border: "1px solid var(--border)",
-                  padding: "0.75rem 1.5rem",
-                  borderRadius: "var(--border-radius)",
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                }}
               >
                 Cancelar
-              </button>
-              <button
-                onClick={handleConfirmExit}
-                style={{
-                  backgroundColor: "var(--primary)",
-                  color: "#FFFFFF",
-                  border: "none",
-                  padding: "0.75rem 1.5rem",
-                  borderRadius: "var(--border-radius)",
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                  boxShadow: "var(--shadow-sm)",
-                }}
-              >
-                Abandonar e Sair
               </button>
             </div>
           </div>

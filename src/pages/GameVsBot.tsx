@@ -1,3 +1,4 @@
+import { useEffect, useState, useRef } from "react";
 import {
   type Piece,
   BLACK_PIECE,
@@ -9,6 +10,16 @@ import { GameModel } from "../model/GameModel";
 import { formatTime } from "../util/util";
 import type { PageType } from "../types/general";
 import { useGameBot } from "../hooks/useGameBot";
+import {
+  RotateCcw,
+  LogOut,
+  PlayCircle,
+  Volume2,
+  VolumeX,
+  X,
+  Cpu,
+  User,
+} from "lucide-react";
 import "./GameVsBot.css";
 
 const isLightSquare = (row: number, col: number) => (row + col) % 2 === 0;
@@ -25,7 +36,6 @@ interface GameVsBotProps {
 }
 
 const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
-  // (Controller)
   const { gameState, actions, config } = useGameBot(difficulty);
   const {
     board,
@@ -39,6 +49,30 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
     isThinking,
     stats,
   } = gameState;
+
+  // Estado para tamanho dinâmico da célula (Animação Responsiva)
+  const [cellSize, setCellSize] = useState(60);
+  const boardRef = useRef<HTMLDivElement>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (gameOver) setIsModalOpen(true);
+  }, [gameOver]);
+
+  // Mede o tamanho real da célula para a animação
+  useEffect(() => {
+    const updateCellSize = () => {
+      if (boardRef.current) {
+        const cell = boardRef.current.querySelector(".cell");
+        if (cell) {
+          setCellSize(cell.getBoundingClientRect().width);
+        }
+      }
+    };
+    updateCellSize();
+    window.addEventListener("resize", updateCellSize);
+    return () => window.removeEventListener("resize", updateCellSize);
+  }, []);
 
   const isCellValid = (row: number, col: number) =>
     validMoves.some((m) => m.row === row && m.col === col);
@@ -66,7 +100,8 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
       const deltaRow = animatingPiece.to.row - animatingPiece.from.row;
       const deltaCol = animatingPiece.to.col - animatingPiece.from.col;
       return {
-        transform: `translate(${deltaCol * 60}px, ${deltaRow * 60}px)`,
+        // Usa cellSize dinâmico
+        transform: `translate(${deltaCol * cellSize}px, ${deltaRow * cellSize}px)`,
         transition: "transform 0.3s ease-in-out",
         zIndex: 100,
       };
@@ -92,147 +127,124 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
   return (
     <div className="container">
       <div className="game-header">
-        <div className="stats-row">
-          <div className="stat">
-            <span className="stat-label">Dificuldade:</span>
-            <span className="stat-value uppercase">
-              {BOT_NAME.get(difficulty)!}
-            </span>
-          </div>
-          <div className="stat">
-            <span className="stat-label">Tempo:</span>
-            <span className="stat-value">{formatTime(stats.elapsedTime)}</span>
+        <div className="header-content">
+          <div className="difficulty-badge">
+            <Cpu size={16} />
+            <span>Bot {BOT_NAME.get(difficulty)}</span>
           </div>
 
-          {isThinking && (
-            <div
-              className="stat"
-              style={{ color: "#e67e22", fontWeight: "bold" }}
-            >
-              Pensando...
-            </div>
-          )}
-
-          <div className="stat">
-            <span className="stat-label">Jogadas:</span>
-            <span className="stat-value">{stats.moveHistory.length}</span>
+          <div className="turn-indicator">
+            {currentPlayer === BLACK_PIECE ? (
+              <span className="turn-active black-turn">
+                <User size={16} /> Sua vez
+              </span>
+            ) : (
+              <span className="turn-active white-turn">
+                <Cpu size={16} /> Vez do Bot
+                {isThinking && <span className="thinking-dots">...</span>}
+              </span>
+            )}
           </div>
+
+          <div className="timer-badge">{formatTime(stats.elapsedTime)}</div>
 
           <button
-            className="small-button"
-            style={{ marginLeft: "10px" }}
+            className="sound-toggle-btn"
             onClick={actions.toggleSound}
+            title={config.soundEnabled ? "Desativar som" : "Ativar som"}
           >
-            {config.soundEnabled ? "🔊" : "🔇"}
+            {config.soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
           </button>
-        </div>
-
-        <div className="turn-indicator">
-          <span className="turn-label">Turno:</span>
-          <div
-            className="turn-piece"
-            style={{
-              backgroundColor:
-                currentPlayer === BLACK_PIECE ? "#2B2118" : "#FFF4ED",
-              border:
-                currentPlayer === WHITE_PIECE ? "2px solid #2B2118" : "none",
-            }}
-          />
-          <span className="turn-text">
-            {currentPlayer === BLACK_PIECE ? "Pretas (Você)" : "Brancas (Bot)"}
-          </span>
         </div>
       </div>
 
-      <div className="game-container">
-        {/* TABULEIRO */}
-        <div className="board-wrapper" style={{ backgroundColor: "white" }}>
-          <div className="column-labels">
-            {GameModel.COLUMNS.map((col, idx) => (
-              <div key={idx} className="label">
-                {col}
+      <div className="game-main-layout">        
+        <div className="board-section">
+          <div className="board-wrapper">
+          
+            <div className="board-flex-row">
+          
+              {/* Grid do Tabuleiro */}
+              <div className="board" ref={boardRef}>
+                {board.map((row, rowIndex) => (
+                  <div key={rowIndex} className="row">
+                    {row.map((cell, colIndex) => {
+                      const isValid = isCellValid(rowIndex, colIndex);
+                      const isSelected =
+                        selectedPiece?.row === rowIndex &&
+                        selectedPiece?.col === colIndex;
+
+                      return (
+                        <div
+                          key={colIndex}
+                          className="cell"
+                          style={{
+                            backgroundColor: getCellBackgroundColor(
+                              rowIndex,
+                              colIndex
+                            ),
+                            cursor:
+                              gameOver || isThinking
+                                ? "default"
+                                : isValid ||
+                                  (cell === BLACK_PIECE &&
+                                    currentPlayer === BLACK_PIECE)
+                                ? "pointer"
+                                : "default",
+                            boxShadow: isSelected
+                              ? "inset 0 0 0 3px #DC0E0E"
+                              : "none",
+                          }}
+                          onClick={() =>
+                            actions.onCellClick(rowIndex, colIndex)
+                          }
+                        >
+                          {shouldShowPiece(rowIndex, colIndex) && (
+                            <div
+                              className="piece"
+                              style={{
+                                backgroundColor:
+                                  getPieceType(rowIndex, colIndex) ===
+                                  BLACK_PIECE
+                                    ? "#2B2118"
+                                    : "#FFF4ED",
+                                border:
+                                  getPieceType(rowIndex, colIndex) ===
+                                  WHITE_PIECE
+                                    ? "2px solid #2B2118"
+                                    : "none",
+                                ...getPieceStyle(rowIndex, colIndex),
+                              }}
+                            />
+                          )}
+                          {isValid && <div className="valid-move-indicator" />}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-
-          <div className="board-row">
-            <div className="row-labels">
-              {[8, 7, 6, 5, 4, 3, 2, 1].map((num, idx) => (
-                <div key={idx} className="label">
-                  {num}
-                </div>
-              ))}
-            </div>
-
-            <div className="board">
-              {board.map((row, rowIndex) => (
-                <div key={rowIndex} className="row">
-                  {row.map((cell, colIndex) => {
-                    const isValid = isCellValid(rowIndex, colIndex);
-                    const isSelected =
-                      selectedPiece?.row === rowIndex &&
-                      selectedPiece?.col === colIndex;
-
-                    return (
-                      <div
-                        key={colIndex}
-                        className="cell"
-                        style={{
-                          backgroundColor: getCellBackgroundColor(
-                            rowIndex,
-                            colIndex
-                          ),
-                          cursor:
-                            gameOver || isThinking
-                              ? "default"
-                              : isValid ||
-                                (cell === BLACK_PIECE &&
-                                  currentPlayer === BLACK_PIECE)
-                              ? "pointer"
-                              : "default",
-                          border: isSelected ? "3px solid #DC0E0E" : "none",
-                        }}
-                        onClick={() => actions.onCellClick(rowIndex, colIndex)}
-                      >
-                        {shouldShowPiece(rowIndex, colIndex) && (
-                          <div
-                            className="piece"
-                            style={{
-                              backgroundColor:
-                                getPieceType(rowIndex, colIndex) === BLACK_PIECE
-                                  ? "#2B2118"
-                                  : "#FFF4ED",
-                              border:
-                                getPieceType(rowIndex, colIndex) === WHITE_PIECE
-                                  ? "2px solid #2B2118"
-                                  : "none",
-                              ...getPieceStyle(rowIndex, colIndex),
-                            }}
-                          />
-                        )}
-                        {isValid && <div className="valid-move-indicator" />}
-                      </div>
-                    );
-                  })}
-                </div>
-              ))}
             </div>
           </div>
         </div>
-        
-        <div className="sidebar">
-          <div className="stats-container">
-            <h3 className="section-title">Estatísticas</h3>
 
+        {/* SIDEBAR */}
+        <div className="sidebar">
+          <div className="stats-card">
+            <h3 className="card-title">Peças no Jogo</h3>
             <div className="piece-counts">
               <div className="count-row">
-                <span className="count-label">Peças Pretas:</span>
+                <span className="count-label">
+                  <div className="indicator-dot black"></div> Você (Pretas)
+                </span>
                 <span className="count-value">
                   {board.flat().filter((p) => p === BLACK_PIECE).length}
                 </span>
               </div>
               <div className="count-row">
-                <span className="count-label">Peças Brancas:</span>
+                <span className="count-label">
+                  <div className="indicator-dot white"></div> Bot (Brancas)
+                </span>
                 <span className="count-value">
                   {board.flat().filter((p) => p === WHITE_PIECE).length}
                 </span>
@@ -240,58 +252,82 @@ const GameVsBot = ({ navigate, difficulty = "easy" }: GameVsBotProps) => {
             </div>
           </div>
 
-          <div className="history-container">
-            <h3 className="section-title">Histórico de Jogadas</h3>
+          <div className="history-card">
+            <h3 className="card-title">Histórico</h3>
             <div className="history-list">
               {stats.moveHistory.length === 0 ? (
-                <div className="empty-history">Nenhuma jogada ainda</div>
+                <div className="empty-history">Início do jogo</div>
               ) : (
                 stats.moveHistory.map((move, idx) => (
                   <div key={idx} className="move-entry">
-                    <span className="move-number">{idx + 1}.</span>
-                    <span className="move-notation">{move}</span>
+                    <span className="move-idx">{idx + 1}.</span>
+                    <span className="move-text">{move}</span>
                   </div>
                 ))
               )}
             </div>
           </div>
 
-          <div className="button-container">
-            <button className="button" onClick={() => navigate("lobby")}>
-              Sair
+          <div className="action-buttons">
+            <button className="btn btn-secondary" onClick={actions.resetGame}>
+              <RotateCcw size={18} /> Reiniciar
             </button>
-            <button className="button secondary" onClick={actions.resetGame}>
-              Reiniciar
+            <button
+              className="btn btn-outlined"
+              onClick={() => navigate("lobby")}
+            >
+              <LogOut size={18} /> Sair
             </button>
           </div>
         </div>
       </div>
 
-      {gameOver && (
-        <div className="modal">
-          <div className="modal-content">
-            <h2 className="modal-title">Fim de Jogo!</h2>
-            <p className="modal-text">
+    
+      {gameOver && isModalOpen && (
+        <div className="modal-overlay">
+          <div className="game-over-card" style={{ position: "relative" }}>
+            <button
+              className="modal-close-btn"
+              onClick={() => setIsModalOpen(false)}
+            >
+              <X size={24} />
+            </button>
+
+            <h2>Fim de Jogo!</h2>
+            <p>
               Vencedor:{" "}
-              {winner === BLACK_PIECE ? "Pretas (Você)" : "Brancas (Bot)"}
+              <strong>
+                {winner === BLACK_PIECE ? "Você 🏆" : "Bot (Brancas)"}
+              </strong>
             </p>
-            <div className="final-stats">
-              <div className="final-stat">
-                <span className="final-stat-label">Tempo total:</span>
-                <span className="final-stat-value">
-                  {formatTime(stats.elapsedTime)}
-                </span>
+
+            <div className="modal-stats-summary">
+              <div className="summary-item">
+                <span>Tempo:</span> <strong>{formatTime(stats.elapsedTime)}</strong>
               </div>
-              <div className="final-stat">
-                <span className="final-stat-label">Total de jogadas:</span>
-                <span className="final-stat-value">
-                  {stats.moveHistory.length}
-                </span>
+              <div className="summary-item">
+                <span>Jogadas:</span> <strong>{stats.moveHistory.length}</strong>
               </div>
             </div>
-            <button className="button" onClick={actions.resetGame}>
-              Novo Jogo
-            </button>
+
+            <div className="modal-actions">
+              <button
+                className="modal-btn btn-replay"
+                onClick={() => {
+                  actions.resetGame();
+                  setIsModalOpen(false);
+                }}
+              >
+                <PlayCircle size={18} /> Jogar Novamente
+              </button>
+
+              <button
+                className="modal-btn btn-exit"
+                onClick={() => navigate("lobby")}
+              >
+                <LogOut size={18} /> Voltar ao Lobby
+              </button>
+            </div>
           </div>
         </div>
       )}

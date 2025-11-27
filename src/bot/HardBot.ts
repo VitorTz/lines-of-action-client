@@ -37,6 +37,7 @@ export class HardBot extends BotPlayer {
     }
 
     selectMove(board: Board, allMoves: Move[]): Move {
+        
         const startTime = Date.now();
         this.transpositionTable.clear();
         this.nodesVisited = 0;
